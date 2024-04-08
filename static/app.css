@@ -7,4 +7,33 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #1E1E1E;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8%;
+    width: 100%;
+    box-shadow: -1px 1px  15px #363636;
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+h1 {
+    letter-spacing: 0.85px;
+    font-weight: 200;
+    color: white;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Canvas */
+#swarm-grid {
+    width: 500px;
+    height: 500px;
 }
