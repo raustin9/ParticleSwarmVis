@@ -16,7 +16,7 @@ nav {
     position: absolute;
     top: 0;
     left: 0;
-    height: 8%;
+    height: 80px;
     width: 100%;
     box-shadow: -1px 1px  15px #363636;
 
@@ -34,6 +34,6 @@ h1 {
 
 /* Canvas */
 #swarm-grid {
-    width: 500px;
-    height: 500px;
+    margin-top: 80px;
+    border: 1px solid #363636;
 }

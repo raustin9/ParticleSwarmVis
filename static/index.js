@@ -1,19 +1,24 @@
 import { Swarm } from "./swarm.js";
 
 class App {
-    constructor(dimension, numx, numy, boxw, boxh) {
+    constructor(numx, numy, box_size) {
         this.swarm = new Swarm();
         this.grid = document.getElementById("swarm-grid");
         this.context = this.grid.getContext("2d");
-        this.context.canvas.width = dimension;
-        this.context.canvas.height = dimension;
+        this.context.canvas.width = numx * box_size;
+        this.context.canvas.height = numy * box_size;
 
         this.grid_data = Array(numx)
             .fill()
             .map(() => Array(numy).fill(0));
+
+        for (let i = 0; i < this.grid_data.length; i++) {
+            for (let j = 0; j <= this.grid_data.length; j++) {
+                this.grid_data[i][j] = Math.floor(Math.random() * 4);
+            }
+        }
         
-        this.boxw = boxw;
-        this.boxh = boxh;
+        this.box_size = box_size;
     }
 
     create_grid() {
@@ -21,17 +26,22 @@ class App {
             for (let j = 0; j <= this.grid_data.length; j++) {
                 this.context.beginPath();
                 this.context.rect(
-                    i * this.boxw,
-                    j * this.boxh,
-                    this.boxw,
-                    this.boxh
+                    i * this.box_size,
+                    j * this.box_size,
+                    this.box_size,
+                    this.box_size
                 );
-                this.context.strokeStyle = "green";
+                this.context.strokeStyle = "#363636";
+                this.context.fillStyle = "cyan";
+                if (this.grid_data[i][j] === 3) {
+                    this.context.fill();
+                } else {
+                }
                 this.context.stroke();
             }
         }
     }
 }
 
-let app = new App(800, 80, 80, 15, 15);
+let app = new App(130, 70, 10, 10);
 app.create_grid();
