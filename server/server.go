@@ -10,19 +10,6 @@ import (
 
 const keyServerAddr = "serveAddr"
 
-func hello_world(w http.ResponseWriter, r *http.Request) {
-    if r.Method != "GET" {
-        http.Error(w, "Method is not supported.", http.StatusNotFound)
-        return
-    }
-    
-    ctx := r.Context()
-
-    log.Printf("%s: Endpoint hit: '/'\n", ctx.Value(keyServerAddr))
-    fmt.Fprintf(w, "%s: Homepage endpoint", ctx.Value(keyServerAddr))
-}
-
-
 func init_server() {
     router := http.NewServeMux()
     file_server := http.FileServer(http.Dir("./static"))
