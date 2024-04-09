@@ -10,16 +10,21 @@
             <h1>COSC 420 Final</h1>
         </nav>
 
-        <canvas id="swarm-grid"></canvas>
+        <canvas id="swarm-grid" width="640" height="480"></canvas>
     </body>
 
     <script type="importmap">
         {
             "imports": {
                 "swarm": "./swarm.js"
+                ,"renderer": "./renderer/renderer.js"
+                ,"shader": "./renderer/shader.js"
+                ,"buffer": "./renderer/buffer.js"
+                ,"helpers": "./renderer/lib/helpers.js"
             }
         }
     </script>
+    <script src="renderer/lib/glmatrix.js" defer></script>
     <script type="module" src="index.js"></script>
 </html>
 
