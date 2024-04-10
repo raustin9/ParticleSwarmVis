@@ -10,7 +10,7 @@ export default class Buffer {
     // @param ctx The webGL context
     // @param data The data that we want to put in the buffer
     // @param type The type of buffer we want to create. --> ARRAY_BUFFER...
-    constructor(ctx, name, data, type=null, per_vertex_components=null) {
+    constructor(ctx, name, data, per_vert_components, type=null) {
         this.data = data;
         this.name = name;
         this.gl = ctx;
@@ -22,10 +22,11 @@ export default class Buffer {
         }
         this.type = type;
         
-        if (!per_vertex_components) {
-            console.error(`Buffer::Buffer(): must specify per_vertex_components!`);
+        if (!per_vert_components) {
+            console.error(`Buffer::Buffer(): must specify per_vert_components!`);
         }
-        this.components = per_vertex_components;
+        this.components = per_vert_components;
+        console.log(`${name}: ${this.components} components.`);
     }
 
     /** 
@@ -51,7 +52,7 @@ export default class Buffer {
     bind_and_enable(shader) {
         this.bind();
         let location = shader.get_attribute_location(this.name);
-        this.gl.vertexAttribPointer(location, 2, this.gl.FLOAT, false, 0, 0);
+        this.gl.vertexAttribPointer(location, this.components, this.gl.FLOAT, false, 0, 0);
         this.gl.enableVertexAttribArray(location);
     }
 

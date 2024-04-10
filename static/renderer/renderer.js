@@ -49,7 +49,6 @@ export default class Renderer {
         let fsource = helpers.read_file_sync("shaders/simple.frag");
         this.shader = new Shader(this.gl, vsource, fsource);
 
-        
         let positions  = new Float32Array(
             [
                 -0.5, -0.5, 
@@ -62,30 +61,32 @@ export default class Renderer {
             ]
         );
 
-        let square = new Object(this.gl)
+        let colors = new Float32Array([
+            0.2, 0.3, 0.5, 1.0,
+            0.5, 0.1, 0.8, 1.0,
+            0.4, 0.7, 0.8, 1.0,
+            
+            0.4, 0.7, 0.8, 1.0,
+            0.5, 0.1, 0.8, 1.0,
+            0.2, 0.3, 0.5, 1.0,
+        ]);
+
+        let square = new Object(this.gl, 6)
             .add_shader(this.shader)
-            .add_vertices(positions, "coordinates", this.gl.ARRAY_BUFFER, 6)
+            .add_vertex_data(positions, "coordinates", this.gl.ARRAY_BUFFER, 2)
+            .add_vertex_data(colors, "color", this.gl.ARRAY_BUFFER, 4)
         ;
-
-        let tpos = new Float32Array(
-            [
-                -0.3, -0.8, 
-                 0.9, -0.3, 
-                 0.4,  0.6, 
-            ]
-        );
-
-        let triangle = new Object(this.gl)
-            .add_shader(this.shader)
-            .add_vertices(tpos, "coordinates", this.gl.ARRAY_BUFFER, 3)
-        ;
-
         this.drawable_objects.push(square);
-        this.drawable_objects.push(triangle);
 
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(0.0, 0.0, 0.0, 0.3);
+        this.gl.depthFunc(this.gl.LEQUAL);
+        
         requestAnimationFrame(this.#animate.bind(this));
     }
 
+    // @brief Animate sequence for rendering
     #animate(now) {
         now *= 0.001;
         let delta_time = now - this.then;
@@ -94,11 +95,9 @@ export default class Renderer {
         requestAnimationFrame(this.#animate.bind(this));
     }
 
+    // @brief Render a frame of the scene
     #draw_frame(delta_time) {
-        this.gl.clearColor(0.5, 0.5, 0.8, 0.9);
-        this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
         for (let i = 0; i < this.drawable_objects.length; i++) {
             this.drawable_objects[i].draw();
