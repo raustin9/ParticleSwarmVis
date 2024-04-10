@@ -6,6 +6,7 @@ export default class Object {
     
     vertices = null;
     vertex_buffer = null;
+    vertex_count = null;
     
     shader = null;
     has_shader = false;
@@ -26,8 +27,9 @@ export default class Object {
     // @param vertices The vertex position data
     // @param buffer_type The type of WebGL buffer. ARRAY_BUFFER etc
     // @param draw_type The type of buffer draw type we want. STATIC_DRAW DYNAMIC_DRAW etc
-    add_vertices(vertices, buffer_type, draw_type=this.gl.STATIC_DRAW) {
+    add_vertices(vertices, buffer_type, vertex_count, draw_type=this.gl.STATIC_DRAW) {
         this.draw_type = draw_type;
+        this.vertex_count = vertex_count;
         switch (buffer_type) {
             case this.gl.ARRAY_BUFFER:
                 this.vertex_buffer = new Buffer(this.gl, vertices, this.gl.ARRAY_BUFFER);
@@ -77,9 +79,8 @@ export default class Object {
         this.vertex_buffer.bind();
 
         let coord = this.gl.getAttribLocation(this.shader.shaderProgram, "coordinates");
-
         this.gl.vertexAttribPointer(coord, 2, this.gl.FLOAT, false, 0, 0);
-        
         this.gl.enableVertexAttribArray(coord);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertex_count);
     }
 }

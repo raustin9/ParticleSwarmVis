@@ -19,6 +19,9 @@ export default class Renderer {
 
     then = 0;
     total_time = 0;
+
+    drawable_objects = []; // List of objects that 
+                           // will be rendered to the scene
     
 
     constructor(canvas, x, y) {
@@ -61,16 +64,26 @@ export default class Renderer {
 
         let square = new Object(this.gl)
             .add_shader(this.shader)
-            .add_vertices(positions, this.gl.ARRAY_BUFFER)
+            .add_vertices(positions, this.gl.ARRAY_BUFFER, 6)
         ;
 
-        square.draw();
-        
-        this.gl.clearColor(0.5, 0.5, 0.8, 0.9);
-        this.gl.enable(this.gl.DEPTH_TEST);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        let tpos = new Float32Array(
+            [
+                -0.3, -0.8, 
+                 0.9, -0.3, 
+                 0.4,  0.6, 
+            ]
+        );
+
+        let triangle = new Object(this.gl)
+            .add_shader(this.shader)
+            .add_vertices(tpos, this.gl.ARRAY_BUFFER, 3)
+        ;
+
+        this.drawable_objects.push(square);
+        this.drawable_objects.push(triangle);
+
+        requestAnimationFrame(this.#animate.bind(this));
     }
 
     #animate(now) {
@@ -82,13 +95,14 @@ export default class Renderer {
     }
 
     #draw_frame(delta_time) {
-        let positions = [0.5, 0.5, 0.1,-0.5, 0.5,-0.5];
-        let vertex_buffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertex_buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        this.gl.clearColor(0.5, 0.5, 0.8, 0.9);
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
-
+        for (let i = 0; i < this.drawable_objects.length; i++) {
+            this.drawable_objects[i].draw();
+        }
     }
 
     // @brief Create the projection matrix
