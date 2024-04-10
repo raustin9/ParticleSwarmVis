@@ -1,6 +1,7 @@
 import helpers from "./lib/helpers.js";
 import Shader from "./shader.js";
 import Buffer from "./buffer.js";
+import Object from "./object.js"
 
 let glib = glMatrix; // naming convenience
 
@@ -44,32 +45,32 @@ export default class Renderer {
         let vsource = helpers.read_file_sync("shaders/simple.vert");
         let fsource = helpers.read_file_sync("shaders/simple.frag");
         this.shader = new Shader(this.gl, vsource, fsource);
-        let positions  = [-0.5, 0.5, -0.5, -0.5, 0.0, -0.5,];
-        
-        let vertex_buffer = this.gl.createBuffer();
-        
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertex_buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 
-        this.gl.useProgram(this.shader.shaderProgram);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertex_buffer);
         
-        let coord = this.gl.getAttribLocation(this.shader.shaderProgram, "coordinates");
+        let positions  = new Float32Array(
+            [
+                -0.5, -0.5, 
+                 0.5, -0.5, 
+                 0.5,  0.5, 
 
-        this.gl.vertexAttribPointer(coord, 2, this.gl.FLOAT, false, 0, 0);
-        
-        this.gl.enableVertexAttribArray(coord);
-        
-        this.gl.clearColor(0.5, 0.5, 0.5, 0.9);
+                 0.5,  0.5, 
+                -0.5,  0.5, 
+                -0.5, -0.5, 
+            ]
+        );
 
+        let square = new Object(this.gl)
+            .add_shader(this.shader)
+            .add_vertices(positions, this.gl.ARRAY_BUFFER)
+        ;
+
+        square.draw();
+        
+        this.gl.clearColor(0.5, 0.5, 0.8, 0.9);
         this.gl.enable(this.gl.DEPTH_TEST);
-
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     }
 
     #animate(now) {

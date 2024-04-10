@@ -13,6 +13,7 @@ export default class Buffer {
         this.type = type;
         this.gl = ctx;
         this.bufferID = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferID);
     }
 
     // @brief Bind the created buffer
@@ -20,6 +21,10 @@ export default class Buffer {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferID);
         this.is_bound = true;
         return this;
+    }
+
+    unbind() {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
     }
 
     // @brief Create the bound buffer
