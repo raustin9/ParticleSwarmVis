@@ -64,7 +64,7 @@ export default class Renderer {
 
         let square = new Object(this.gl)
             .add_shader(this.shader)
-            .add_vertices(positions, this.gl.ARRAY_BUFFER, 6)
+            .add_vertices(positions, "coordinates", this.gl.ARRAY_BUFFER, 6)
         ;
 
         let tpos = new Float32Array(
@@ -77,7 +77,7 @@ export default class Renderer {
 
         let triangle = new Object(this.gl)
             .add_shader(this.shader)
-            .add_vertices(tpos, this.gl.ARRAY_BUFFER, 3)
+            .add_vertices(tpos, "coordinates", this.gl.ARRAY_BUFFER, 3)
         ;
 
         this.drawable_objects.push(square);

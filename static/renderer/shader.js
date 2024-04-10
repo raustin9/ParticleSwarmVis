@@ -35,6 +35,14 @@ export default class Shader {
     }
   }
 
+    /**
+     * @brief Return the location of the attribute name in the shader program
+     * @param attribute_name The name of the desired attribute 
+     */
+    get_attribute_location(attribute_name) {
+        return this.GL.getAttribLocation(this.shaderProgram, attribute_name);
+    }
+
   /**
    * 
    * @param {WEBGL CONTExt} GL the context for webgl
