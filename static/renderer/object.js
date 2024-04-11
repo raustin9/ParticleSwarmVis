@@ -1,10 +1,13 @@
 import Shader from "./shader.js";
-import Buffer from "./buffer.js";
+import ArrayBuffer from "./array_buffer.js";
+
+let glib = glMatrix; // naming convenience
 
 export default class Object {
     gl = null;
 
     buffers = [];
+    uniforms = [];
     
     shader = null;
     has_shader = false;
@@ -12,6 +15,7 @@ export default class Object {
     draw_type = null; // WebGL buffer draw type. 
                       // defaults to STATIC_DRAW
 
+    model_matrix = glib.mat4.create();
 
     constructor(ctx, vertex_count) {
         this.gl = ctx;
@@ -37,7 +41,7 @@ export default class Object {
         switch (buffer_type) {
             case this.gl.ARRAY_BUFFER:
                 console.log(`Creating ${name} with ${per_vertex_count} components.`);
-                let buf = new Buffer(
+                let buf = new ArrayBuffer(
                     this.gl, 
                     name,
                     vert_data,
@@ -57,6 +61,13 @@ export default class Object {
         return this;
     }
 
+    add_uniform(
+        buf
+    ) {
+        this.uniforms.push(buf);
+        return this;
+    }
+    
     // @brief Add a shader to this object if it does not have one already
     add_shader(shader) {
         if (!this.has_shader) {
@@ -68,6 +79,7 @@ export default class Object {
 
         return this;
     }
+
 
     // @brief Specify the draw type we want the buffer to use
     // STATIC_DRAW
@@ -93,6 +105,10 @@ export default class Object {
         for (let i = 0; i < this.buffers.length; i++) {
             this.buffers[i].bind_and_enable(this.shader);
         }
+        for (let i = 0; i < this.uniforms.length; i++) {
+            this.uniforms[i].bind(this.shader);
+        }
+
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertex_count);
     }
 }

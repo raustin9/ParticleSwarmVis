@@ -1,4 +1,4 @@
-export default class Buffer {
+export default class AttributeBuffer {
     gl = null;        // the WebGL context
     bufferID = null;  // the handle to the buffer
     type = null;      // ARRAY_BUFFER etc

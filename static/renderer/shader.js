@@ -43,6 +43,14 @@ export default class Shader {
         return this.GL.getAttribLocation(this.shaderProgram, attribute_name);
     }
 
+    /**
+     * @brief Return the location of the uniform name in the shader program
+     * @param attribute_name The name of the desired uniform 
+     */
+    get_uniform_location(uniform_name) {
+        return this.GL.getUniformLocation(this.shaderProgram, uniform_name);
+    }
+
   /**
    * 
    * @param {WEBGL CONTExt} GL the context for webgl
