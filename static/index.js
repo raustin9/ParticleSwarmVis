@@ -20,6 +20,7 @@ class App {
 
         this.box_size = box_size;
         this.point_radius = point_radius;
+        this.particles = [];
     }
 
     // Create background grid on canvas
@@ -55,15 +56,36 @@ class App {
         }
     }
 
-    create_particles() {
-        let particle = new Particle(
-            this.canvas_width / 2,
-            this.canvas_height / 2,
-            this.point_radius,
-            'cyan'
-        );
-        particle.draw(this.context);
+    create_particles(particle_array) {
+        for (let i = 0; i < particle_array.length; i++) {
+            let xpos = particle_array[i][0];
+            let ypos = particle_array[i][1];
+
+            let xdir = 1;
+            let ydir = 1;
+            if (Math.random() < 0.5) {
+                xdir = -1;
+            }
+            if (Math.random() < 0.5) {
+                ydir = -1;
+            }
+
+            let particle = new Particle(xpos, ypos, this.point_radius, 5, 'cyan', xdir, ydir);
+            particle.draw(this.context);
+            this.particles.push(particle);
+        }
     }
+
+    updateCircle = () => {
+        requestAnimationFrame(this.updateCircle);
+
+        this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        this.create_grid('#262626');
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].update(this.context);
+        }
+    };
 
     // Create webgl context for particle system
     // create_webgl() {
@@ -71,8 +93,16 @@ class App {
     // }
 }
 
-let app = new App(50, 40);
+let app = new App(50, 10);
 app.create_grid('#262626');
-app.create_particles();
+
+let particle_array = [
+    [100, 100],
+    [550, 300],
+];
+
+app.create_particles(particle_array);
+app.updateCircle(app.particles[0]);
+// app.particles[0].update(app.context);
 
 // app.create_webgl();
