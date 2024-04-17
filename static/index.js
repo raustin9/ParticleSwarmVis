@@ -1,22 +1,6 @@
 import { Swarm } from './swarm.js';
 import Renderer from './renderer/renderer.js';
-
-class Particle {
-    constructor(xpos, ypos, radius, color) {
-        this.xpos = xpos;
-        this.ypos = ypos;
-        this.radius = radius;
-        this.color = color;
-    }
-
-    draw(context) {
-        context.beginPath();
-        context.arc(this.xpos, this.ypos, this.radius, 0, 2 * Math.PI);
-        context.fillStyle = this.color;
-        context.fill();
-        context.closePath();
-    }
-}
+import { Particle } from './particle.js';
 class App {
     constructor(box_size, point_radius) {
         this.swarm = new Swarm();
@@ -34,41 +18,12 @@ class App {
 
         // this.renderer = new Renderer(this.grid, 640, 480);
 
-        // this.grid_data = Array(numx)
-        //     .fill()
-        //     .map(() => Array(numy).fill(0));
-
-        // for (let i = 0; i < this.grid_data.length; i++) {
-        //     for (let j = 0; j <= this.grid_data.length; j++) {
-        //         this.grid_data[i][j] = Math.floor(Math.random() * 4);
-        //     }
-        // }
-
         this.box_size = box_size;
         this.point_radius = point_radius;
     }
 
-    // Create 2D grid on canvas
-    create_grid() {
-        // for (let i = 0; i < this.grid_data.length; i++) {
-        //     for (let j = 0; j <= this.grid_data.length; j++) {
-        //         this.context.beginPath();
-        //         this.context.rect(
-        //             i * this.box_size,
-        //             j * this.box_size,
-        //             this.box_size,
-        //             this.box_size
-        //         );
-        //         this.context.strokeStyle = '#363636';
-        //         this.context.fillStyle = 'cyan';
-        //         if (this.grid_data[i][j] === 3) {
-        //             this.context.fill();
-        //         } else {
-        //         }
-        //         this.context.stroke();
-        //     }
-        // }
-
+    // Create background grid on canvas
+    create_grid(color) {
         // get number of boxes per axis
         const num_boxes_x = this.canvas_width / this.box_size;
         const num_boxes_y = this.canvas_height / this.box_size;
@@ -82,9 +37,10 @@ class App {
             this.context.beginPath();
             this.context.moveTo(x_shift + i * this.box_size, 0);
             this.context.lineTo(x_shift + i * this.box_size, this.canvas_height);
-            this.context.strokeStyle = 'white';
+            this.context.strokeStyle = color;
 
             this.context.stroke();
+            this.context.closePath();
         }
 
         // vertical lines
@@ -92,14 +48,20 @@ class App {
             this.context.beginPath();
             this.context.moveTo(0, y_shift + i * this.box_size);
             this.context.lineTo(this.canvas_width, y_shift + i * this.box_size);
-            this.context.strokeStyle = 'white';
+            this.context.strokeStyle = color;
 
             this.context.stroke();
+            this.context.closePath();
         }
     }
 
     create_particles() {
-        let particle = new Particle(this.width / 2, this.height / 2, this.radius, 'cyan');
+        let particle = new Particle(
+            this.canvas_width / 2,
+            this.canvas_height / 2,
+            this.point_radius,
+            'cyan'
+        );
         particle.draw(this.context);
     }
 
@@ -109,7 +71,8 @@ class App {
     // }
 }
 
-let app = new App(40, 40);
-app.create_grid();
+let app = new App(50, 40);
+app.create_grid('#262626');
 app.create_particles();
+
 // app.create_webgl();
