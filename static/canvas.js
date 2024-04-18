@@ -2,6 +2,15 @@ import { Particle } from './particle.js';
 import { randomIntFromRange, distance } from './util.js';
 
 export class Canvas {
+    /**
+     * @title Canvas Constructor
+     *
+     * @param {elementId} grid Grid element
+     * @param {CanvasRenderingContext2D} context Context of canvas element
+     * @param {number} box_size Size of grid boxes for canvas background
+     * @param {number} particle_radius Size of particles
+     * @param {string} grid_color Hex code for grid line color
+     */
     constructor(grid, context, box_size, particle_radius, grid_color) {
         this.grid = grid;
         this.context = context;
@@ -15,12 +24,23 @@ export class Canvas {
         this.particles = [];
     }
 
+    /**
+     * @title create(particle_array)
+     * @description Creates grid and particles within the canvas element
+     *
+     * @param {Particle[]} particle_array Array containing list of created particles
+     */
     create(particle_array) {
         this.create_grid(this.grid_color);
         this.create_particles(particle_array);
     }
 
-    // Create background grid on canvas
+    /**
+     * @title create_grid(color)
+     * @description Create background grid on canvas
+     *
+     * @param {string} color Hex code for grid line color
+     */
     create_grid(color) {
         // get number of boxes per axis
         const num_boxes_x = this.canvas_width / this.box_size;
@@ -53,6 +73,12 @@ export class Canvas {
         }
     }
 
+    /**
+     * @title create_particles(particle_array)
+     * @description Creates particles based on particle array.
+     *
+     * @param {Particle[]} particle_array Array containing of rendered particles
+     */
     create_particles(particle_array) {
         for (let i = 0; i < particle_array.length; i++) {
             let xpos = particle_array[i][0];
@@ -91,6 +117,10 @@ export class Canvas {
         }
     }
 
+    /**
+     * @title animate()
+     * @description Animate particles
+     */
     animate() {
         requestAnimationFrame(() => this.animate());
         this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);

@@ -3,6 +3,9 @@ import { Swarm } from './swarm.js';
 import { Canvas } from './canvas.js';
 import { randomIntFromRange } from './util.js';
 class App {
+    /**
+     * @title App Constructor
+     */
     constructor() {
         // grid parameters
         this.box_size = 50;
@@ -10,8 +13,7 @@ class App {
 
         // particle parameters
         this.particle_radius = 10;
-        // this.num_particles = 1800;
-        this.num_particles = 50;
+        this.num_particles = 50; // ~1800 seems to be highest that runs smoothly
         this.particle_array = [];
 
         this.grid = document.getElementById('swarm-grid');
@@ -28,6 +30,10 @@ class App {
         // this.renderer = new Renderer(this.grid, 640, 480);
     }
 
+    /**
+     * @title create_particle_array()
+     * @description Creates randomly initialized particle starting locations. Sets class instance particle_array variable with array.
+     */
     create_particle_array() {
         let particle_array = [];
 
@@ -47,6 +53,10 @@ class App {
         this.particle_array = particle_array;
     }
 
+    /**
+     * @title run()
+     * @description Runs application. Creates particle array, canvas, and animates canvas.
+     */
     run() {
         this.create_particle_array();
         this.canvas.create(this.particle_array);
