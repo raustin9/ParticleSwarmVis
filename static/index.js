@@ -8,11 +8,6 @@ class App {
         this.grid = document.getElementById('swarm-grid');
         this.context = this.grid.getContext('2d');
 
-        // this.grid.style.width = '100%';
-        // this.grid.style.height = '100%';
-        // this.grid.width = this.grid.offsetWidth;
-        // this.grid.height = this.grid.offsetHeight;
-
         this.canvas_width = this.context.canvas.width;
         this.canvas_height = this.context.canvas.height;
 
@@ -56,6 +51,17 @@ class App {
         }
     }
 
+    distance(x1, y1, x2, y2) {
+        const xDist = x2 - x1;
+        const yDist = y2 - y1;
+
+        return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+    }
+
+    randomIntFromRange(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     create_particles(particle_array) {
         for (let i = 0; i < particle_array.length; i++) {
             let xpos = particle_array[i][0];
@@ -70,14 +76,36 @@ class App {
                 ydir = -1;
             }
 
+            // regenerate random particle location if particles overlap
+            if (i !== 0) {
+                for (let j = 0; j < this.particles.length; j++) {
+                    if (
+                        this.distance(xpos, ypos, this.particles[j].xpos, this.particles[j].ypos) -
+                            this.point_radius * 2 <
+                        0
+                    ) {
+                        xpos = this.randomIntFromRange(
+                            this.point_radius,
+                            this.canvas_width - this.point_radius
+                        );
+                        ypos = this.randomIntFromRange(
+                            this.point_radius,
+                            this.canvas_height - this.point_radius
+                        );
+
+                        j = -1;
+                    }
+                }
+            }
+
             let particle = new Particle(xpos, ypos, this.point_radius, 5, 'cyan', xdir, ydir);
             particle.draw(this.context);
             this.particles.push(particle);
         }
     }
 
-    updateCircle = () => {
-        requestAnimationFrame(this.updateCircle);
+    updateParticles = () => {
+        requestAnimationFrame(this.updateParticles);
 
         this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -93,16 +121,23 @@ class App {
     // }
 }
 
-let app = new App(50, 10);
-app.create_grid('#262626');
+const box_size = 50;
+const grid_color = '#262626';
+const particle_radius = 10;
+const num_particles = 20;
 
-let particle_array = [
-    [100, 100],
-    [550, 300],
-];
+let app = new App(box_size, particle_radius);
+app.create_grid(grid_color);
+
+let particle_array = [];
+for (let i = 0; i < num_particles; i++) {
+    particle_array.push([
+        app.randomIntFromRange(particle_radius, app.canvas_width - particle_radius),
+        app.randomIntFromRange(particle_radius, app.canvas_height - particle_radius),
+    ]);
+}
 
 app.create_particles(particle_array);
-app.updateCircle(app.particles[0]);
-// app.particles[0].update(app.context);
+app.updateParticles();
 
 // app.create_webgl();
