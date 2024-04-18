@@ -6,7 +6,7 @@
 body {
     width: 100vw;
     height: 100vh;
-    background-color: #1E1E1E;
+    background-color: #1e1e1e;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,7 +18,7 @@ nav {
     left: 0;
     height: 80px;
     width: 100%;
-    box-shadow: -1px 1px  15px #363636;
+    box-shadow: -1px 1px 15px #363636;
 
     display: flex;
     justify-content: space-evenly;
@@ -35,5 +35,5 @@ h1 {
 /* Canvas */
 #swarm-grid {
     margin-top: 80px;
-    border: 1px solid #363636;
+    border: 5px solid white;
 }

@@ -2,30 +2,29 @@
 <html>
     <head>
         <title>Swarm vis</title>
-        <link rel="stylesheet" href="app.css">
+        <link rel="stylesheet" href="app.css" />
     </head>
     <body>
-        <nav>
+        <nav id="navbar">
             <h1>Particle Swarm Visualization</h1>
             <h1>COSC 420 Final</h1>
         </nav>
 
-        <canvas id="swarm-grid" width="640" height="480"></canvas>
+        <canvas id="swarm-grid" width="1000" height="600"></canvas>
     </body>
 
     <script type="importmap">
         {
             "imports": {
-                "swarm": "./swarm.js"
-                ,"renderer": "./renderer/renderer.js"
-                ,"shader": "./renderer/shader.js"
-                ,"buffer": "./renderer/buffer.js"
-                ,"helpers": "./renderer/lib/helpers.js"
-                ,"object": "./renderer/lib/object.js"
+                "swarm": "./swarm.js",
+                "renderer": "./renderer/renderer.js",
+                "shader": "./renderer/shader.js",
+                "buffer": "./renderer/buffer.js",
+                "helpers": "./renderer/lib/helpers.js",
+                "object": "./renderer/lib/object.js"
             }
         }
     </script>
     <script src="renderer/lib/glmatrix.js" defer></script>
     <script type="module" src="index.js"></script>
 </html>
-

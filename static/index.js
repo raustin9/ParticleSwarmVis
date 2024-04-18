@@ -1,58 +1,74 @@
-import { Swarm } from "./swarm.js";
-import Renderer from "./renderer/renderer.js";
-
+import { Swarm } from './swarm.js';
+// import Renderer from './renderer/renderer.js';
+import { Canvas } from './canvas.js';
+import { randomIntFromRange } from './util.js';
 class App {
-    constructor(numx, numy, box_size) {
+    /**
+     * @title App Constructor
+     */
+    constructor() {
+        // grid parameters
+        this.box_size = 50;
+        this.grid_color = '#262626';
+
+        // particle parameters
+        this.particle_radius = 10;
+        this.num_particles = 50; // ~1800 seems to be highest that runs smoothly
+        this.particle_array = [];
+
+        this.grid = document.getElementById('swarm-grid');
+        this.context = this.grid.getContext('2d');
+
         this.swarm = new Swarm();
-        
-        this.grid = document.getElementById("swarm-grid");
-        // this.context = this.grid.getContext("2d");
-        // this.context.canvas.width = numx * box_size;
-        // this.context.canvas.height = numy * box_size;
-
-        this.renderer = new Renderer(this.grid, 640, 480);
-
-//        this.grid_data = Array(numx)
-//            .fill()
-//            .map(() => Array(numy).fill(0));
-//
-//        for (let i = 0; i < this.grid_data.length; i++) {
-//            for (let j = 0; j <= this.grid_data.length; j++) {
-//                this.grid_data[i][j] = Math.floor(Math.random() * 4);
-//            }
-//        }
-        
-//        this.box_size = box_size;
+        this.canvas = new Canvas(
+            this.grid,
+            this.context,
+            this.box_size,
+            this.particle_radius,
+            this.grid_color
+        );
+        // this.renderer = new Renderer(this.grid, 640, 480);
     }
 
-    // Create 2D grid on canvas
-    create_grid() {
-        for (let i = 0; i < this.grid_data.length; i++) {
-            for (let j = 0; j <= this.grid_data.length; j++) {
-                this.context.beginPath();
-                this.context.rect(
-                    i * this.box_size,
-                    j * this.box_size,
-                    this.box_size,
-                    this.box_size
-                );
-                this.context.strokeStyle = "#363636";
-                this.context.fillStyle = "cyan";
-                if (this.grid_data[i][j] === 3) {
-                    this.context.fill();
-                } else {
-                }
-                this.context.stroke();
-            }
+    /**
+     * @title create_particle_array()
+     * @description Creates randomly initialized particle starting locations. Sets class instance particle_array variable with array.
+     */
+    create_particle_array() {
+        let particle_array = [];
+
+        for (let i = 0; i < this.num_particles; i++) {
+            particle_array.push([
+                randomIntFromRange(
+                    this.particle_radius,
+                    this.canvas.canvas_width - this.particle_radius
+                ),
+                randomIntFromRange(
+                    this.particle_radius,
+                    this.canvas.canvas_height - this.particle_radius
+                ),
+            ]);
         }
+
+        this.particle_array = particle_array;
+    }
+
+    /**
+     * @title run()
+     * @description Runs application. Creates particle array, canvas, and animates canvas.
+     */
+    run() {
+        this.create_particle_array();
+        this.canvas.create(this.particle_array);
+        this.canvas.animate();
     }
 
     // Create webgl context for particle system
-    create_webgl() {
-        this.renderer.render();
-    }
+    // create_webgl() {
+    // this.renderer.render();
+    // }
 }
 
-let app = new App(130, 70, 10, 10);
-// app.create_grid();
-app.create_webgl();
+let app = new App();
+app.run();
+// app.create_webgl();
