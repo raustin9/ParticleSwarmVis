@@ -1,5 +1,5 @@
 import { Particle } from './particle.js';
-import { randomIntFromRange, distance } from './util';
+import { randomIntFromRange, distance } from './util.js';
 
 export class Canvas {
     constructor(grid, context, box_size, particle_radius, grid_color) {
@@ -92,12 +92,12 @@ export class Canvas {
     }
 
     animate() {
-        requestAnimationFrame(animate);
-        this.context.clearRect(0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(() => this.animate());
+        this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
         this.create_grid(this.grid_color);
 
-        particles.forEach((particle) => {
-            particle.update(this.context, particles);
+        this.particles.forEach((particle) => {
+            particle.update(this.context, this.particles);
         });
     }
 }

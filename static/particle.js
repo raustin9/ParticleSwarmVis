@@ -1,4 +1,4 @@
-import { rotateVelocities, distance } from './util';
+import { rotateVelocities, distance } from './util.js';
 
 export class Particle {
     constructor(xpos, ypos, radius, speed, color, init_xdir, init_ydir) {
@@ -35,7 +35,7 @@ export class Particle {
 
         for (let i = 0; i < particles.length; i++) {
             const otherParticle = particles[i];
-            if ((this.x = otherParticle.x)) continue;
+            if (this.x === otherParticle.x) continue;
 
             if (
                 distance(this.posx, this.posy, otherParticle.posx, otherParticle.posy) -

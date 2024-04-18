@@ -4,10 +4,13 @@ import { Canvas } from './canvas.js';
 import { randomIntFromRange } from './util.js';
 class App {
     constructor() {
+        // grid parameters
         this.box_size = 50;
         this.grid_color = '#262626';
-        this.particle_radius = 10;
-        this.num_particles = 20;
+
+        // particle parameters
+        this.particle_radius = 20;
+        this.num_particles = 5;
         this.particle_array = [];
 
         this.grid = document.getElementById('swarm-grid');
@@ -29,7 +32,7 @@ class App {
 
         for (let i = 0; i < this.num_particles; i++) {
             particle_array.push([
-                this.util.randomIntFromRange(
+                randomIntFromRange(
                     this.particle_radius,
                     this.canvas.canvas_width - this.particle_radius
                 ),
