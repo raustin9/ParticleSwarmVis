@@ -9,8 +9,9 @@ class App {
         this.grid_color = '#262626';
 
         // particle parameters
-        this.particle_radius = 20;
-        this.num_particles = 5;
+        this.particle_radius = 10;
+        // this.num_particles = 1800;
+        this.num_particles = 50;
         this.particle_array = [];
 
         this.grid = document.getElementById('swarm-grid');

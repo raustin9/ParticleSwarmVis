@@ -28,39 +28,38 @@ export class Particle {
         context.closePath();
     }
 
-    // this = current this
-    // particles = array of all particles
     update = (context, particles) => {
         this.draw(context);
 
         for (let i = 0; i < particles.length; i++) {
             const otherParticle = particles[i];
-            if (this.x === otherParticle.x) continue;
+            if (this.xpos === otherParticle.xpos) continue;
 
             if (
-                distance(this.posx, this.posy, otherParticle.posx, otherParticle.posy) -
+                distance(this.xpos, this.ypos, otherParticle.xpos, otherParticle.ypos) -
                     this.radius * 2 <
                 0
             ) {
+                console.log('contact');
                 const res = {
                     x: this.velocity.x - otherParticle.velocity.x,
                     y: this.velocity.y - otherParticle.velocity.y,
                 };
 
                 if (
-                    res.x * (otherParticle.posx - this.posx) +
-                        res.y * (otherParticle.posy - this.posy) >=
+                    res.x * (otherParticle.xpos - this.xpos) +
+                        res.y * (otherParticle.ypos - this.ypos) >=
                     0
                 ) {
                     const m1 = this.mass;
                     const m2 = otherParticle.mass;
                     const theta = -Math.atan2(
-                        otherParticle.posy - this.posy,
-                        otherParticle.posx - this.posx
+                        otherParticle.ypos - this.ypos,
+                        otherParticle.xpos - this.xpos
                     );
 
-                    const rotatedVelocity1 = rotatedVelocities(this.velocity, theta);
-                    const rotatedVelocity2 = rotatedVelocities(otherParticle.velocity, theta);
+                    const rotatedVelocity1 = rotateVelocities(this.velocity, theta);
+                    const rotatedVelocity2 = rotateVelocities(otherParticle.velocity, theta);
 
                     const swapVelocity1 = {
                         x:
