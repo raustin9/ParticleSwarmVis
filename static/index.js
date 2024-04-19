@@ -12,9 +12,11 @@ class App {
         this.grid_color = '#262626';
 
         // particle parameters
+        this.particle_array = [];
         this.particle_radius = 10;
         this.num_particles = 50; // ~1800 seems to be highest that runs smoothly
-        this.particle_array = [];
+        this.particle_fill = false;
+        this.particle_color = 'cyan';
 
         this.grid = document.getElementById('swarm-grid');
         this.context = this.grid.getContext('2d');
@@ -25,6 +27,8 @@ class App {
             this.context,
             this.box_size,
             this.particle_radius,
+            this.particle_color,
+            this.particle_fill,
             this.grid_color
         );
         // this.renderer = new Renderer(this.grid, 640, 480);

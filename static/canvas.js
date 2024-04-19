@@ -9,9 +9,19 @@ export class Canvas {
      * @param {CanvasRenderingContext2D} context Context of canvas element
      * @param {number} box_size Size of grid boxes for canvas background
      * @param {number} particle_radius Size of particles
+     * @param {string} particle_color Color of particles
+     * @param {boolean} particle_fill If the particles are filled or outlines
      * @param {string} grid_color Hex code for grid line color
      */
-    constructor(grid, context, box_size, particle_radius, grid_color) {
+    constructor(
+        grid,
+        context,
+        box_size,
+        particle_radius,
+        particle_color,
+        particle_fill,
+        grid_color
+    ) {
         this.grid = grid;
         this.context = context;
 
@@ -21,6 +31,8 @@ export class Canvas {
 
         this.box_size = box_size;
         this.particle_radius = particle_radius;
+        this.particle_fill = particle_fill;
+        this.particle_color = particle_color;
         this.particles = [];
     }
 
@@ -111,7 +123,16 @@ export class Canvas {
                 }
             }
 
-            let particle = new Particle(xpos, ypos, this.particle_radius, 5, 'cyan', xdir, ydir);
+            let particle = new Particle(
+                xpos,
+                ypos,
+                this.particle_radius,
+                5,
+                this.particle_color,
+                this.particle_fill,
+                xdir,
+                ydir
+            );
             particle.draw(this.context);
             this.particles.push(particle);
         }

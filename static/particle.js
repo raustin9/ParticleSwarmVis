@@ -9,16 +9,18 @@ export class Particle {
      * @param {number} radius Size of particle
      * @param {number} speed Initial Speed
      * @param {string} color Hex code for grid line color
+     * @param {boolean} fill If the particles are filled or outlines
      * @param {number} init_xdir Randomly assigned value (1 | -1) to set initial direction in X direction
      * @param {number} init_ydir Randomly assigned value (1 | -1) to set initial direction in Y direction
      * @param {Object} velocity Speed parameter with direction
      */
-    constructor(xpos, ypos, radius, speed, color, init_xdir, init_ydir) {
+    constructor(xpos, ypos, radius, speed, color, fill, init_xdir, init_ydir) {
         this.xpos = xpos;
         this.ypos = ypos;
         this.radius = radius;
         this.speed = speed;
         this.color = color;
+        this.fill = fill;
         this.init_xdir = init_xdir;
         this.init_ydir = init_ydir;
         this.velocity = {
@@ -38,10 +40,14 @@ export class Particle {
         context.beginPath();
 
         context.arc(this.xpos, this.ypos, this.radius, 0, 2 * Math.PI);
-        context.strokeStyle = this.color;
-        context.stroke();
-        // context.fillStyle = this.color;
-        // context.fill();
+
+        if (this.filled) {
+            context.fillStyle = this.color;
+            context.fill();
+        } else {
+            context.strokeStyle = this.color;
+            context.stroke();
+        }
 
         context.closePath();
     }
