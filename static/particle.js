@@ -41,7 +41,7 @@ export class Particle {
 
         context.arc(this.xpos, this.ypos, this.radius, 0, 2 * Math.PI);
 
-        if (this.filled) {
+        if (this.fill) {
             context.fillStyle = this.color;
             context.fill();
         } else {
