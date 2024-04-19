@@ -44,7 +44,8 @@ export class Canvas {
      */
     create(particle_array) {
         this.create_grid(this.grid_color);
-        this.create_square(100);
+        // this.create_square(100);
+        this.create_circle(100);
         this.create_particles(particle_array);
     }
 
@@ -140,6 +141,12 @@ export class Canvas {
         }
     }
 
+    /**
+     * @title create_square(radius)
+     * @description Create a square of particles for other particles to target
+     *
+     * @param {number} radius The number of pixels wide the square is
+     */
     create_square(radius) {
         let center = {
             x: this.canvas_width / 2,
@@ -239,6 +246,40 @@ export class Canvas {
             );
             right.draw(this.context);
             this.particles.push(right);
+        }
+    }
+
+    create_circle(radius) {
+        let center = {
+            x: this.canvas_width / 2,
+            y: this.canvas_height / 2,
+        };
+
+        let center_particle = new Particle(
+            -1,
+            center.x,
+            center.y,
+            this.particle_radius,
+            0,
+            'red',
+            false,
+            0,
+            0
+        );
+        center_particle.draw(this.context);
+        this.particles.push(center_particle);
+
+        let circumference = 2 * Math.PI * radius;
+        let num_circles = circumference / (2 * this.particle_radius);
+
+        for (let i = 0; i < 185; i += 360 / num_circles) {
+            let x = center.x + radius * Math.cos(i);
+            let y = center.y + radius * Math.sin(i);
+            console.log(i);
+
+            let particle = new Particle(-1, x, y, this.particle_radius, 0, 'blue', false, 0, 0);
+            particle.draw(this.context);
+            this.particles.push(particle);
         }
     }
 
