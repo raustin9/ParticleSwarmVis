@@ -72,7 +72,6 @@ export class Particle {
                     this.radius * 2 <
                 0
             ) {
-                console.log('contact');
                 const res = {
                     x: this.velocity.x - otherParticle.velocity.x,
                     y: this.velocity.y - otherParticle.velocity.y,
