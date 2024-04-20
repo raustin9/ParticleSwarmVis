@@ -4,6 +4,7 @@ export class Particle {
     /**
      * @title Particle Constructor
      *
+     * @param {number} id Particle ID
      * @param {number} xpos X-coordinate position of the particle
      * @param {number} ypos Y-coordinate position of the particle
      * @param {number} radius Size of particle
@@ -14,7 +15,8 @@ export class Particle {
      * @param {number} init_ydir Randomly assigned value (1 | -1) to set initial direction in Y direction
      * @param {Object} velocity Speed parameter with direction
      */
-    constructor(xpos, ypos, radius, speed, color, fill, init_xdir, init_ydir) {
+    constructor(id, xpos, ypos, radius, speed, color, fill, init_xdir, init_ydir) {
+        this.id = id;
         this.xpos = xpos;
         this.ypos = ypos;
         this.radius = radius;
@@ -65,7 +67,8 @@ export class Particle {
         // check for collisions
         for (let i = 0; i < particles.length; i++) {
             const otherParticle = particles[i];
-            if (this.xpos === otherParticle.xpos) continue;
+            if (this.id === otherParticle.id) continue;
+            if (this.id === -1 || otherParticle.id === -1) continue;
 
             if (
                 distance(this.xpos, this.ypos, otherParticle.xpos, otherParticle.ypos) -
