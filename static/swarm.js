@@ -1,5 +1,5 @@
 export class Swarm {
-    constructor() {
-        console.log("Swarm");
-    }
+  constructor() {
+    return;
+  }
 }
