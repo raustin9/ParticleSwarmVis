@@ -26,6 +26,7 @@ class App {
         this.shape = shape;
         this.shape_radius = shape_radius;
 
+
         this.grid = document.getElementById('swarm-grid');
         this.context = this.grid.getContext('2d');
 
@@ -41,7 +42,29 @@ class App {
             this.shape,
             this.shape_radius
         );
-        // this.renderer = new Renderer(this.grid, 640, 480);
+
+        this.controls = document.getElementById('controls');
+        this.controls.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.canvas.reset();
+            let num_particles = document.getElementById('num_particles_value').value;
+            let radios = document.getElementsByName('shape');
+            let radius = document.getElementById('shape_radius').value;
+
+            let shape = '';
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    shape = radios[i].value;
+                    break;
+                }
+            }
+
+            console.log(parseInt(num_particles), shape, parseInt(radius));
+
+            // handle submit
+            let app = new App(parseInt(num_particles), shape, parseInt(radius));
+            app.run();
+        });
     }
 
     /**
@@ -78,37 +101,7 @@ class App {
         this.canvas.create(this.particle_array);
         this.canvas.animate();
     }
-
-    // Create webgl context for particle system
-    // create_webgl() {
-    // this.renderer.render();
-    // }
 }
 
 let app = new App(1500, '', 300);
 app.run();
-
-let controls = document.getElementById('controls');
-
-controls.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let num_particles = document.getElementById('num_particles_value').value;
-    let radios = document.getElementsByName('shape');
-    let radius = document.getElementById('shape_radius').value;
-
-    let shape = '';
-    for (let i = 0; i < radios.length; i++) {
-        if (radios[i].checked) {
-            shape = radios[i].value;
-            break;
-        }
-    }
-
-    console.log(parseInt(num_particles), shape, parseInt(radius));
-
-    // handle submit
-    let app = new App(parseInt(num_particles), shape, parseInt(radius));
-    app.run();
-});
-
-// app.create_webgl();
