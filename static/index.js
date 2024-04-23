@@ -96,7 +96,7 @@ controls.addEventListener('submit', (e) => {
     let radios = document.getElementsByName('shape');
     let radius = document.getElementById('shape_radius').value;
 
-    let shape = 'square';
+    let shape = '';
     for (let i = 0; i < radios.length; i++) {
         if (radios[i].checked) {
             shape = radios[i].value;
