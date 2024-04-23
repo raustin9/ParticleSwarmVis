@@ -14,6 +14,8 @@ let g_best = {
   x: 0,
   y: 0,
 };
+
+
 let g_best_score = Infinity;
 export class Particle {
   /**
@@ -199,6 +201,7 @@ export class Particle {
         }
         continue;
       }
+
 
       if (
         distance_to_particle < this.social_range &&

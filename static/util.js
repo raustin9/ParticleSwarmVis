@@ -44,3 +44,13 @@ export function rotateVelocities(velocity, theta) {
     };
     return rotatedVelocity;
 }
+
+/**
+ * @title thresholdCompare(v1, v2, threshold)
+ * @description Determines if two values are withing certain range
+ *
+ */
+export function thresholdCompare(v1, v2, threshold) {
+    // console.log(Math.abs(v1 - v2));
+    return (Math.abs(v1 - v2) < threshold);
+}
