@@ -52,7 +52,6 @@ class App {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify(data)
         }
@@ -86,7 +85,15 @@ class App {
   -- Avg. Distance to Shape: ${result.average_distance_to_shape}
   -- Timed out?: ${result.timeout}`
         );
-        this.#send_data(result);
+        let data = {
+          "total_steps": result.total_steps,
+          "average_distance_to_shape": result.average_distance_to_shape,
+          "timeout": result.timeout,
+          "inertia": this.config.inertia,
+          "social":  this.config.social,
+          "cognition": this.config.cognition
+        };
+        this.#send_data(data);
 
         this.canvas.reset();
         delete this.canvas;

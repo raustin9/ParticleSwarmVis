@@ -17,6 +17,9 @@ type Data struct {
     AverageDistance float32 `json:"average_distance_to_shape"`
     Timeout bool `json:"timeout"`
     TotalSteps int32 `json:"total_steps"`
+    Inertia float32  `json:"inertia"`
+    Social float32 `json:"social"`
+    Cognition float32 `json:"cognition"`
 }
 
 func data(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +41,7 @@ func data(w http.ResponseWriter, r *http.Request) {
     }
 
     f, err := os.OpenFile("./server/data.csv", os.O_APPEND|os.O_WRONLY, 0644)
-    fmt.Fprintf(f, "%d, %f\n", d.TotalSteps, d.AverageDistance)
+    fmt.Fprintf(f, "%d, %f, %f, %f, %f\n", d.TotalSteps, d.AverageDistance, d.Inertia, d.Social, d.Cognition)
 
     log.Printf("%s: /data: Data: %+v", ctx.Value(keyServerAddr), d)
     fmt.Fprintf(w, "Data: %+v", d)
