@@ -45,6 +45,20 @@ class App {
     this.particle_array = particle_array;
   }
 
+  #send_data(data) {
+    fetch(
+        "/data",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(data)
+        }
+    );
+  }
+
   /**
    * @title run()
    * @description Runs application. Creates particle array, canvas, and animates canvas.
@@ -72,6 +86,7 @@ class App {
   -- Avg. Distance to Shape: ${result.average_distance_to_shape}
   -- Timed out?: ${result.timeout}`
         );
+        this.#send_data(result);
 
         this.canvas.reset();
         delete this.canvas;
