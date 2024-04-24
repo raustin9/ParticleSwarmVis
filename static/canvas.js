@@ -1,5 +1,5 @@
 import { Particle } from './particle.js';
-import { randomIntFromRange, distance } from './util.js';
+import { randomIntFromRange, distance, thresholdCompare } from './util.js';
 
 export class Canvas {
     /**
@@ -28,7 +28,7 @@ export class Canvas {
     ) {
         this.grid = grid;
         this.context = context;
-
+       
         this.context.canvas.width = window.innerWidth;
         this.context.canvas.height = window.innerHeight;
 
@@ -44,6 +44,9 @@ export class Canvas {
 
         this.shape = shape;
         this.shape_radius = shape_radius;
+        
+        this.total_steps = 0;
+        this.is_converged = false;
     }
 
     /**
@@ -266,16 +269,81 @@ export class Canvas {
     }
 
     /**
+     * @title calculate_mean_error()
+     * @description find the mean error for all particles from the 
+     *              shape
+     */
+    calculate_mean_error() {
+        let i = 0;
+        let total = 0;
+        for (
+            ;
+            i < this.particles.length; 
+            i++
+        ) {
+            total += this.particles[i].best_distance_to_wall;
+            // console.log(this.particles[i].best_distance_to_wall);
+        }
+        return total / this.particles.length;
+    }
+
+    /**
+     * @title check_convergence()
+     * @description determine if we are converged
+     *              we are converged  if the previous error is within a certain 
+     *              threshold of the previous one for a certaine number of steps
+     */
+    check_convergence() {
+        let i, 
+            num_stagnated;
+
+        for (
+            i = 0, num_stagnated = 0;
+            i < this.particles.length;
+            i++
+        ) {
+            if (this.particles[i].stagnation_counter > 500) {
+                // console.log(`stag_count: ${this.particles[i].stagnation_counter}`);
+                num_stagnated++;
+            }
+        }
+
+//        if (num_stagnated > (this.particles.length * 0.8)) {
+//            console.log(`Stagnated: ${num_stagnated}. Total: ${this.particles.length}`);
+//        }
+        return (num_stagnated > (this.particles.length * 0.9));
+    }
+
+    /*
+     * @title reset()
+     * @description Reset the context of the canvas
+     */
+    reset() {
+        this.context.reset();
+    }
+
+    /**
      * @title animate()
      * @description Animate particles
      */
     animate() {
+        this.total_steps++;
+        // this.prev_mean_error = this.current_mean_error;
+        
         requestAnimationFrame(() => this.animate());
         this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
         this.create_grid(this.grid_color);
 
-        this.particles.forEach((particle) => {
-            particle.update(this.context, this.particles);
-        });
+        // Normal for loop is faster than forEach
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].update(this.context, this.particles);
+        }
+
+        if (!this.is_converged
+            && this.check_convergence()
+        ) {
+            console.log(`Converged in ${this.total_steps} steps.`);
+            this.is_converged = true;
+        }
     }
 }

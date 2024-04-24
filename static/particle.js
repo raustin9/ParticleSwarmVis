@@ -1,19 +1,21 @@
 import { rotateVelocities, distance } from "./util.js";
 
-const MAX_SPEED = 3;
-const SCENT_RANGE = 10000;
-const SOCIAL_RANGE = 5;
+const MAX_SPEED = 5;
+const SCENT_RANGE = 100;
+const SOCIAL_RANGE = 50;
 const SOCIAL_SCENT_INCREASE_FACTOR = 10;
-const SCENT_REDUCTION_FACTOR = 1;
-const COGNITION = 4;
-const SOCIAL = 1;
+const SCENT_REDUCTION_FACTOR = 10;
+const COGNITION = 3;
+const SOCIAL = 3;
 const STAGNATION_LIMIT = Infinity;
-const SCENT_DISTANCE_EXPONENT = 1;
+const INERTIA = 1;
+const MAX_TURNING_RADIUS = null; // degrees
 
 let g_best = {
   x: 0,
   y: 0,
 };
+
 let g_best_score = Infinity;
 export class Particle {
   /**
@@ -65,6 +67,7 @@ export class Particle {
     this.cognition = COGNITION;
     this.social = SOCIAL;
     this.stagnation_limit = STAGNATION_LIMIT;
+    this.inertia = INERTIA;
     this.stagnation_counter = 0;
   }
 
@@ -135,16 +138,13 @@ export class Particle {
         otherParticle.ypos
       );
 
-      const distance_score =
-        Math.pow(distance_to_particle, SCENT_DISTANCE_EXPONENT) /
-        this.scent_reduction_factor;
       // Process distance from shape particle
       if (otherParticle.id === -1) {
         if (
           distance_to_particle <= this.scent_range &&
-          distance_score < smallest_scent_score
+          distance_to_particle < smallest_scent_score
         ) {
-          smallest_scent_score = distance_score;
+          smallest_scent_score = distance_to_particle;
           smallest_scent = {
             x: otherParticle.xpos,
             y: otherParticle.ypos,
@@ -203,7 +203,6 @@ export class Particle {
 
       const nearby_social_scent =
         otherParticle.p_best_score * this.social_scent_increase_factor;
-
       if (
         distance_to_particle < this.social_range &&
         nearby_social_scent < smallest_social_scent_score
@@ -242,48 +241,78 @@ export class Particle {
     }
 
     if (isFinite(this.p_best_score) && isFinite(g_best_score)) {
-      let cognitive_component = {
-        x: this.cognition * Math.random() * (this.p_best.x - this.xpos),
-        y: this.cognition * Math.random() * (this.p_best.y - this.ypos),
-      };
+      let cognitive_component_x =
+        this.cognition * Math.random() * (this.p_best.x - this.xpos);
+      let cognitive_component_y =
+        this.cognition * Math.random() * (this.p_best.y - this.ypos);
+      let social_component_x =
+        this.social * Math.random() * (g_best.x - this.xpos);
+      let social_component_y =
+        this.social * Math.random() * (g_best.y - this.ypos);
 
-      let social_component = {
-        x: this.social * Math.random() * (g_best.x - this.xpos),
-        y: this.social * Math.random() * (g_best.y - this.ypos),
-      };
+      let desired_velocity_x =
+        this.velocity.x * this.inertia +
+        cognitive_component_x +
+        social_component_x;
+      let desired_velocity_y =
+        this.velocity.y * this.inertia +
+        cognitive_component_y +
+        social_component_y;
 
-      // Update velocity
-      this.velocity.x += cognitive_component.x + social_component.x;
-      this.velocity.y += cognitive_component.y + social_component.y;
-    }
+      if (MAX_TURNING_RADIUS !== null) {
+        let turning_radius_radians = (Math.PI * MAX_TURNING_RADIUS) / 180;
+        let current_angle = Math.atan2(this.velocity.y, this.velocity.x);
+        let desired_angle = Math.atan2(desired_velocity_y, desired_velocity_x);
+        let angle_difference = desired_angle - current_angle;
+        angle_difference =
+          ((angle_difference + Math.PI) % (2 * Math.PI)) - Math.PI;
+        angle_difference = Math.max(
+          Math.min(angle_difference, turning_radius_radians),
+          -turning_radius_radians
+        );
 
-    let current_speed = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
-    if (current_speed > MAX_SPEED) {
-      this.velocity.x = (this.velocity.x / current_speed) * MAX_SPEED;
-      this.velocity.y = (this.velocity.y / current_speed) * MAX_SPEED;
+        let current_speed = Math.sqrt(
+          desired_velocity_x ** 2 + desired_velocity_y ** 2
+        );
+        current_speed = Math.min(current_speed, MAX_SPEED);
+        this.velocity.x =
+          Math.cos(current_angle + angle_difference) * current_speed;
+        this.velocity.y =
+          Math.sin(current_angle + angle_difference) * current_speed;
+      } else {
+        let speed = Math.sqrt(
+          desired_velocity_x ** 2 + desired_velocity_y ** 2
+        );
+        if (speed > MAX_SPEED) {
+          desired_velocity_x = (desired_velocity_x / speed) * MAX_SPEED;
+          desired_velocity_y = (desired_velocity_y / speed) * MAX_SPEED;
+        }
+        this.velocity.x = desired_velocity_x;
+        this.velocity.y = desired_velocity_y;
+      }
     }
 
     this.xpos += this.velocity.x;
     this.ypos += this.velocity.y;
 
-    // check for walls
+    // Wall collision checks
     if (this.xpos + this.radius >= context.canvas.width) {
-      this.xpos = context.canvas.width - this.radius; // Adjust position to stay within bounds
-      this.velocity.x *= -1; // Reverse velocity
+      this.xpos = context.canvas.width - this.radius;
+      this.velocity.x *= -1;
     } else if (this.xpos - this.radius <= 0) {
-      this.xpos = this.radius; // Adjust position to stay within bounds
-      this.velocity.x *= -1; // Reverse velocity
+      this.xpos = this.radius;
+      this.velocity.x *= -1;
     }
 
     if (this.ypos + this.radius >= context.canvas.height) {
-      this.ypos = context.canvas.height - this.radius; // Adjust position to stay within bounds
-      this.velocity.y *= -1; // Reverse velocity
+      this.ypos = context.canvas.height - this.radius;
+      this.velocity.y *= -1;
     } else if (this.ypos - this.radius <= 0) {
-      this.ypos = this.radius; // Adjust position to stay within bounds
-      this.velocity.y *= -1; // Reverse velocity
+      this.ypos = this.radius;
+      this.velocity.y *= -1;
     }
 
-    if (this.stagnation_counter > this.stagnation_counter) {
+    if (this.stagnation_counter > this.stagnation_limit) {
       this.reset_p_best();
     }
   }
