@@ -4,16 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-    "io"
+	"io"
 	"log"
 	"net"
 	"net/http"
-    "os"
+	"os"
 )
 
 const keyServerAddr = "serveAddr"
 
 type Data struct {
+    Iteration int32 `json:"iteration"`
+    Inertia float32 `json:"inertia"`
+    Cognition float32 `json:"cognition"`
+    Social float32 `json:"social"`
     AverageDistance float32 `json:"average_distance_to_shape"`
     Timeout bool `json:"timeout"`
     TotalSteps int32 `json:"total_steps"`
@@ -72,6 +76,5 @@ func init_server() {
 
 func main() {
     fmt.Println("Starting server on port 8080")
-
     init_server()
 }

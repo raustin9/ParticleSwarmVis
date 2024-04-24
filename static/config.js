@@ -1,11 +1,19 @@
 export const config = {
   /**********************
+   ** Experimentation  **
+   **********************/
+  experiment_mode: true,
+  inertia_default: 0.5,
+  cognition_default: 1,
+  social_default: 1,
+  random_repeats: 10,
+
+  /**********************
    **   Swarm Config   **
    **********************/
 
   // Whether or not to render the particles
   headless: false,
-  experiment_mode: false,
 
   // Number of particles
   num_particles: 1500,
@@ -58,20 +66,20 @@ export const config = {
   scent_range: 1000,
 
   // Range in which particles can detect other particles
-  social_range: 1000,
+  social_range: 20,
 
   // The factor by which social scent is increased when
   // transmitted between particles
-  social_scent_increase_factor: 1.5,
+  social_scent_increase_factor: 1,
 
   // Cognition
-  cognition: 3,
+  cognition: 4,
 
   // Social
-  social: 2,
+  social: 1,
 
   // Inertia
-  inertia: 1,
+  inertia: 0.1,
 
   // Particle mass
   mass: 1,

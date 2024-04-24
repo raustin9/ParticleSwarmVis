@@ -45,18 +45,56 @@ class App {
     this.particle_array = particle_array;
   }
 
+  generate_test_cases() {
+    let combos = [];
+
+    // Inertia parameter
+    for (let val = 0.1; val <= 1.0; val += 0.1) {
+      for (let i = 0; i < this.config.random_repeats; i++) {
+        combos.push({
+          iteration: i,
+          inertia: parseFloat(val.toFixed(1)),
+          cognition: this.config.cognition_default,
+          social: this.config.social_default,
+        });
+      }
+    }
+
+    // Cognition parameter
+    for (let val = 0.1; val <= 4.0; val += 0.1) {
+      for (let i = 0; i < this.config.random_repeats; i++) {
+        combos.push({
+          iteration: i,
+          inertia: this.config.inertia_default,
+          cognition: parseFloat(val.toFixed(1)),
+          social: this.config.social_default,
+        });
+      }
+    }
+
+    // Social parameter
+    for (let val = 0.1; val <= 4.0; val += 0.1) {
+      for (let i = 0; i < this.config.random_repeats; i++) {
+        combos.push({
+          iteration: i,
+          inertia: this.config.inertia_default,
+          cognition: this.config.cognition_default,
+          social: parseFloat(val.toFixed(1)),
+        });
+      }
+    }
+
+    return combos;
+  }
+
   #send_data(data) {
-    fetch(
-        "/data",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: JSON.stringify(data)
-        }
-    );
+    fetch("/data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
   }
 
   /**
@@ -66,13 +104,11 @@ class App {
   async run() {
     if (this.config.experiment_mode) {
       this.config.headless = true;
-      const inertia_values = [];
-      for (let i = 0.1; i <= 1; i += 0.1) {
-        inertia_values.push(i);
-      }
-
-      for (let inertia_value of inertia_values) {
-        this.config.inertia = inertia_value;
+      const test_cases = this.generate_test_cases();
+      for (let test_case of test_cases) {
+        for (let [key, val] of Object.entries(test_case)) {
+          this.config[key] = val;
+        }
         this.canvas = new Canvas(this.grid, this.context, this.config);
         this.create_particle_array();
         this.canvas.create(this.particle_array);
@@ -80,13 +116,10 @@ class App {
           this.canvas.animate(resolve);
         });
 
-        console.log(
-          `Results:
-  -- Total steps: ${result.total_steps}
-  -- Avg. Distance to Shape: ${result.average_distance_to_shape}
-  -- Timed out?: ${result.timeout}`
-        );
-        this.#send_data(result);
+        this.#send_data({
+          ...result,
+          ...test_case,
+        });
 
         this.canvas.reset();
         delete this.canvas;
