@@ -6,7 +6,7 @@ const SOCIAL_RANGE = 5;
 const SOCIAL_SCENT_INCREASE_FACTOR = 10;
 const SCENT_REDUCTION_FACTOR = 1;
 const COGNITION = 4;
-const SOCIAL = 0.1;
+const SOCIAL = 1;
 const STAGNATION_LIMIT = Infinity;
 const SCENT_DISTANCE_EXPONENT = 1;
 
@@ -135,15 +135,16 @@ export class Particle {
         otherParticle.ypos
       );
 
+      const distance_score =
+        Math.pow(distance_to_particle, SCENT_DISTANCE_EXPONENT) /
+        this.scent_reduction_factor;
       // Process distance from shape particle
       if (otherParticle.id === -1) {
         if (
           distance_to_particle <= this.scent_range &&
-          distance_to_particle < smallest_scent_score
+          distance_score < smallest_scent_score
         ) {
-          smallest_scent_score =
-            Math.pow(distance_to_particle, SCENT_DISTANCE_EXPONENT) /
-            this.scent_reduction_factor;
+          smallest_scent_score = distance_score;
           smallest_scent = {
             x: otherParticle.xpos,
             y: otherParticle.ypos,
@@ -200,12 +201,14 @@ export class Particle {
         continue;
       }
 
+      const nearby_social_scent =
+        otherParticle.p_best_score * this.social_scent_increase_factor;
+
       if (
         distance_to_particle < this.social_range &&
-        otherParticle.p_best_score < smallest_social_scent_score
+        nearby_social_scent < smallest_social_scent_score
       ) {
-        (smallest_social_scent_score = otherParticle.p_best_score),
-          1 * this.social_scent_increase_factor;
+        smallest_social_scent_score = nearby_social_scent;
         smallest_social_scent = {
           x: otherParticle.xpos,
           y: otherParticle.ypos,
