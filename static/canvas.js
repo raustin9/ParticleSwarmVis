@@ -3,6 +3,7 @@ import { randomIntFromRange, distance, thresholdCompare } from "./util.js";
 
 const STOPPED_PARTICLES_THRESHOLD = 0.99;
 const STOP_ANIMATING_ON_PARTICLES_STOPPED = false;
+const MAX_STEPS_BEFORE_STOPPING = 2000;
 export class Canvas {
   /**
    * @title Canvas Constructor
@@ -339,12 +340,12 @@ export class Canvas {
    * @title animate()
    * @description Animate particles
    */
-  animate(particlesStoppedCallback) {
+  animate(particles_stopped_callback) {
     this.total_steps++;
     // this.prev_mean_error = this.current_mean_error;
 
     if (!(this.has_stopped && STOP_ANIMATING_ON_PARTICLES_STOPPED)) {
-      requestAnimationFrame(() => this.animate(particlesStoppedCallback));
+      requestAnimationFrame(() => this.animate(particles_stopped_callback));
     }
 
     this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
@@ -372,13 +373,19 @@ export class Canvas {
     //   this.is_converged = true;
     // }
 
+    const step_threshold_exceeded =
+      this.total_steps >= MAX_STEPS_BEFORE_STOPPING;
+
     this.has_stopped =
-      stopped_count >= STOPPED_PARTICLES_THRESHOLD * this.num_regular_particles;
+      stopped_count >=
+        STOPPED_PARTICLES_THRESHOLD * this.num_regular_particles ||
+      step_threshold_exceeded;
 
     if (this.has_stopped) {
-      particlesStoppedCallback({
+      particles_stopped_callback({
         total_steps: this.total_steps,
         average_distance_to_shape: average_distance_to_shape,
+        timeout: step_threshold_exceeded,
       });
     }
   }

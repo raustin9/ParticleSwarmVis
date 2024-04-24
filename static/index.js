@@ -98,7 +98,7 @@ class App {
 
     this.create_particle_array();
     this.canvas.create(this.particle_array);
-    const result = await new Promise((resolve, reject) => {
+    const result = await new Promise((resolve) => {
       this.canvas.animate(resolve);
     });
     console.log(result);
