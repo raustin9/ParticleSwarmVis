@@ -13,12 +13,16 @@ export class Canvas {
     this.grid = grid;
     this.context = context;
     this.config = { ...config };
+    this.dimensions = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
 
-    this.context.canvas.width = window.innerWidth;
-    this.context.canvas.height = window.innerHeight;
+    if (!this.config.headless) {
+      this.context.canvas.width = this.dimensions.width;
+      this.context.canvas.height = this.dimensions.height;
+    }
 
-    this.canvas_width = this.context.canvas.width;
-    this.canvas_height = this.context.canvas.height;
     this.grid_color = this.config.grid_color;
 
     this.box_size = this.config.box_size;
@@ -60,9 +64,13 @@ export class Canvas {
    * @param {string} color Hex code for grid line color
    */
   create_grid(color) {
+    if (this.config.headless) {
+      return;
+    }
+
     // get number of boxes per axis
-    const num_boxes_x = this.canvas_width / this.box_size;
-    const num_boxes_y = this.canvas_height / this.box_size;
+    const num_boxes_x = this.dimensions.width / this.box_size;
+    const num_boxes_y = this.dimensions.height / this.box_size;
 
     // make boxes split evenly on both sides when not perfectly divisible
     const x_shift =
@@ -74,7 +82,7 @@ export class Canvas {
     for (let i = 1; i < num_boxes_x; i++) {
       this.context.beginPath();
       this.context.moveTo(x_shift + i * this.box_size, 0);
-      this.context.lineTo(x_shift + i * this.box_size, this.canvas_height);
+      this.context.lineTo(x_shift + i * this.box_size, this.dimensions.height);
       this.context.strokeStyle = color;
 
       this.context.stroke();
@@ -85,7 +93,7 @@ export class Canvas {
     for (let i = 1; i < num_boxes_y; i++) {
       this.context.beginPath();
       this.context.moveTo(0, y_shift + i * this.box_size);
-      this.context.lineTo(this.canvas_width, y_shift + i * this.box_size);
+      this.context.lineTo(this.dimensions.width, y_shift + i * this.box_size);
       this.context.strokeStyle = color;
 
       this.context.stroke();
@@ -124,11 +132,11 @@ export class Canvas {
           ) {
             xpos = randomIntFromRange(
               this.particle_radius,
-              this.canvas_width - this.particle_radius
+              this.dimensions.width - this.particle_radius
             );
             ypos = randomIntFromRange(
               this.particle_radius,
-              this.canvas_height - this.particle_radius
+              this.dimensions.height - this.particle_radius
             );
 
             j = -1;
@@ -136,7 +144,15 @@ export class Canvas {
         }
       }
 
-      let particle = new Particle(i, xpos, ypos, xdir, ydir, this.config);
+      let particle = new Particle(
+        i,
+        xpos,
+        ypos,
+        xdir,
+        ydir,
+        this.config,
+        this.dimensions
+      );
       particle.draw(this.context);
       this.particles.push(particle);
     }
@@ -150,8 +166,8 @@ export class Canvas {
    */
   create_square(radius) {
     let center = {
-      x: this.canvas_width / 2,
-      y: this.canvas_height / 2,
+      x: this.dimensions.width / 2,
+      y: this.dimensions.height / 2,
     };
 
     let corners = {
@@ -168,7 +184,15 @@ export class Canvas {
       i += this.particle_radius * 2
     ) {
       // top line
-      let top = new Particle(-1, i, corners.top_left[1], 0, 0, this.config);
+      let top = new Particle(
+        -1,
+        i,
+        corners.top_left[1],
+        0,
+        0,
+        this.config,
+        this.dimensions
+      );
       top.draw(this.context);
       this.particles.push(top);
 
@@ -179,7 +203,8 @@ export class Canvas {
         corners.bottom_left[1],
         0,
         0,
-        this.config
+        this.config,
+        this.dimensions
       );
       bottom.draw(this.context);
       this.particles.push(bottom);
@@ -192,12 +217,28 @@ export class Canvas {
       i += this.particle_radius * 2
     ) {
       // left line
-      let left = new Particle(-1, corners.top_left[0], i, 0, 0, this.config);
+      let left = new Particle(
+        -1,
+        corners.top_left[0],
+        i,
+        0,
+        0,
+        this.config,
+        this.dimensions
+      );
       left.draw(this.context);
       this.particles.push(left);
 
       // right line
-      let right = new Particle(-1, corners.top_right[0], i, 0, 0, this.config);
+      let right = new Particle(
+        -1,
+        corners.top_right[0],
+        i,
+        0,
+        0,
+        this.config,
+        this.dimensions
+      );
       right.draw(this.context);
       this.particles.push(right);
     }
@@ -205,8 +246,8 @@ export class Canvas {
 
   create_circle(radius) {
     let center = {
-      x: this.canvas_width / 2,
-      y: this.canvas_height / 2,
+      x: this.dimensions.width / 2,
+      y: this.dimensions.height / 2,
     };
 
     let circumference = 2 * Math.PI * radius;
@@ -216,7 +257,7 @@ export class Canvas {
       let x = center.x + radius * Math.cos(i);
       let y = center.y + radius * Math.sin(i);
 
-      let particle = new Particle(-1, x, y, 0, 0, this.config);
+      let particle = new Particle(-1, x, y, 0, 0, this.config, this.dimensions);
       particle.draw(this.context);
       this.particles.push(particle);
     }
@@ -252,10 +293,6 @@ export class Canvas {
         num_stagnated++;
       }
     }
-
-    //        if (num_stagnated > (this.particles.length * 0.8)) {
-    //            console.log(`Stagnated: ${num_stagnated}. Total: ${this.particles.length}`);
-    //        }
     return num_stagnated > this.particles.length * 0.9;
   }
 
@@ -264,7 +301,11 @@ export class Canvas {
    * @description Reset the context of the canvas
    */
   reset() {
-    this.context.reset();
+    if (this.config.headless) {
+      delete this.particles;
+    } else {
+      this.context.reset();
+    }
   }
 
   /**
@@ -273,6 +314,10 @@ export class Canvas {
    */
   animate(particles_stopped_callback) {
     this.total_steps++;
+    if (!this.particles) {
+      return;
+    }
+
     // this.prev_mean_error = this.current_mean_error;
 
     if (
@@ -280,8 +325,14 @@ export class Canvas {
     ) {
       requestAnimationFrame(() => this.animate(particles_stopped_callback));
     }
-
-    this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+    if (!this.headless) {
+      this.context.clearRect(
+        0,
+        0,
+        this.dimensions.width,
+        this.dimensions.height
+      );
+    }
     this.create_grid(this.grid_color);
 
     let stopped_count = 0;

@@ -3,7 +3,9 @@ export const config = {
    **   Swarm Config   **
    **********************/
 
+  // Whether or not to render the particles
   headless: false,
+  experiment_mode: true,
 
   // Number of particles
   num_particles: 1500,
@@ -53,7 +55,7 @@ export const config = {
   max_speed: 5,
 
   // Range in which particles can detect a shape particle
-  scent_range: 100,
+  scent_range: 500,
 
   // Range in which particles can detect other particles
   social_range: 50,

@@ -15,7 +15,10 @@ class App {
     this.particle_array = [];
     this.config = config;
     this.grid = document.getElementById("swarm-grid");
-    this.context = this.grid.getContext("2d");
+    this.context = null;
+    if (!config.headless) {
+      this.context = this.grid.getContext("2d");
+    }
     this.canvas = new Canvas(this.grid, this.context, this.config);
   }
 
@@ -30,11 +33,11 @@ class App {
       particle_array.push([
         randomIntFromRange(
           this.config.particle_radius,
-          this.canvas.canvas_width - this.config.particle_radius
+          this.canvas.dimensions.width - this.config.particle_radius
         ),
         randomIntFromRange(
           this.config.particle_radius,
-          this.canvas.canvas_height - this.config.particle_radius
+          this.canvas.dimensions.height - this.config.particle_radius
         ),
       ]);
     }
@@ -47,16 +50,49 @@ class App {
    * @description Runs application. Creates particle array, canvas, and animates canvas.
    */
   async run() {
-    if (!this.config.headless) {
-      this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
-    }
+    if (this.config.experiment_mode) {
+      this.config.headless = true;
+      const inertia_values = [];
+      for (let i = 0.1; i <= 1; i += 0.1) {
+        inertia_values.push(i);
+      }
 
-    this.create_particle_array();
-    this.canvas.create(this.particle_array);
-    const result = await new Promise((resolve) => {
-      this.canvas.animate(resolve);
-    });
-    console.log(result);
+      for (let inertia_value of inertia_values) {
+        this.config.inertia = inertia_value;
+        this.canvas = new Canvas(this.grid, this.context, this.config);
+        this.create_particle_array();
+        this.canvas.create(this.particle_array);
+        const result = await new Promise((resolve) => {
+          this.canvas.animate(resolve);
+        });
+
+        console.log(
+          `Results:
+  -- Total steps: ${result.total_steps}
+  -- Avg. Distance to Shape: ${result.average_distance_to_shape}
+  -- Timed out?: ${result.timeout}`
+        );
+
+        this.canvas.reset();
+        delete this.canvas;
+      }
+    } else {
+      if (!this.config.headless) {
+        this.context.clearRect(
+          0,
+          0,
+          this.canvas.dimensions.width,
+          this.canvas.dimensions.height
+        );
+      }
+
+      this.create_particle_array();
+      this.canvas.create(this.particle_array);
+      const result = await new Promise((resolve) => {
+        this.canvas.animate(resolve);
+      });
+      console.log(result);
+    }
   }
 }
 
@@ -90,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("controls")
     .addEventListener("submit", handleControlsSubmit);
+
   app = new App(configCopy);
   app.run();
 });

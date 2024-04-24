@@ -17,7 +17,7 @@ export class Particle {
    * @param {number} init_ydir Randomly assigned value (1 | -1) to set initial direction in Y direction
    * @param {Object} config Configuration for the app's behavior (see config.js)
    */
-  constructor(id, xpos, ypos, init_xdir, init_ydir, config) {
+  constructor(id, xpos, ypos, init_xdir, init_ydir, config, dimensions) {
     this.id = id;
     this.config = { ...config };
     this.is_shape_particle = this.id === -1;
@@ -36,6 +36,7 @@ export class Particle {
     this.p_best_score = Infinity;
     this.stagnation_counter = 0;
     this.recent_positions = [];
+    this.dimensions = dimensions;
   }
 
   /**
@@ -111,7 +112,6 @@ export class Particle {
    * @param {Particle[]} particles Array containing of rendered particles
    */
   update(context, particles) {
-    let bad_before = true;
     this.draw(context);
     let smallest_scent_score = Infinity;
     let smallest_scent = {
@@ -135,16 +135,16 @@ export class Particle {
     this.ypos += this.velocity.y;
 
     // Wall collision checks
-    if (this.xpos + this.config.particle_radius >= context.canvas.width) {
-      this.xpos = context.canvas.width - this.config.particle_radius;
+    if (this.xpos + this.config.particle_radius >= this.dimensions.width) {
+      this.xpos = this.dimensions.width - this.config.particle_radius;
       this.velocity.x *= -1;
     } else if (this.xpos - this.config.particle_radius <= 0) {
       this.xpos = this.config.particle_radius;
       this.velocity.x *= -1;
     }
 
-    if (this.ypos + this.config.particle_radius >= context.canvas.height) {
-      this.ypos = context.canvas.height - this.config.particle_radius;
+    if (this.ypos + this.config.particle_radius >= this.dimensions.height) {
+      this.ypos = this.dimensions.height - this.config.particle_radius;
       this.velocity.y *= -1;
     } else if (this.ypos - this.config.particle_radius <= 0) {
       this.ypos = this.config.particle_radius;
@@ -359,9 +359,6 @@ export class Particle {
 
     this.recent_positions.push({ x: this.xpos, y: this.ypos });
     this.has_stopped = this.check_stopped();
-    if (!bad_before && (isNaN(this.xpos) || isNaN(this.ypos))) {
-      console.log("this");
-    }
     return {
       min_distance_to_shape: min_distance_to_shape,
       has_stopped: this.has_stopped,
