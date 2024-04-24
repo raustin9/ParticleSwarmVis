@@ -15,7 +15,7 @@ export const config = {
   stop_animating_on_particles_stopped: false,
 
   // Max steps that can occur before the experiment times out.
-  max_steps_before_stopping: 2000,
+  max_steps_before_stopping: 500,
 
   // Size of box in background grid
   box_size: 50,
@@ -44,7 +44,7 @@ export const config = {
   particle_radius: 1.5,
 
   // Whether or not to fill the particles
-  particle_fill: true,
+  particle_fill: false,
 
   // Non-shape Particle color
   particle_color: "cyan",
@@ -63,10 +63,10 @@ export const config = {
   social_scent_increase_factor: 10,
 
   // Cognition
-  cognition: 3,
+  cognition: 10,
 
   // Social
-  social: 1,
+  social: 0.1,
 
   // Inertia
   inertia: 1,
@@ -86,4 +86,12 @@ export const config = {
   // Radius in which recent positions must all fall into
   // in order for the particle to be considered stopped.
   stopping_radius: 30,
+
+  // The fraction of velocity that is preserved on
+  // particle collision
+  collision_energy_loss_factor: 0.9,
+
+  // The amount that is added to the position correction that occurs when
+  // particles collide
+  collision_correction_supplement: 0,
 };

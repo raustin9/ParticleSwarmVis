@@ -295,6 +295,7 @@ export class Canvas {
         continue;
       }
       stopped_count += particle_diagnostic.has_stopped;
+
       total_distance_to_shape += particle_diagnostic.min_distance_to_shape;
     }
 
