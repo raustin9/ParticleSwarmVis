@@ -1,52 +1,34 @@
 import { Particle } from "./particle.js";
 import { randomIntFromRange, distance, thresholdCompare } from "./util.js";
 
-const STOPPED_PARTICLES_THRESHOLD = 0.99;
-const STOP_ANIMATING_ON_PARTICLES_STOPPED = false;
-const MAX_STEPS_BEFORE_STOPPING = 2000;
 export class Canvas {
   /**
    * @title Canvas Constructor
    *
    * @param {elementId} grid Grid element
    * @param {CanvasRenderingContext2D} context Context of canvas element
-   * @param {number} box_size Size of grid boxes for canvas background
-   * @param {number} particle_radius Size of particles
-   * @param {string} particle_color Color of particles
-   * @param {boolean} particle_fill If the particles are filled or outlines
-   * @param {string} grid_color Hex code for grid line color
-   * @param {string} shape Determines shape of convergence
-   * @param {number} shape_radius Determines the radius of the shape of convergence
+   * @param {Object} config Configuration for the app's behavior (see config.js)
    */
-  constructor(
-    grid,
-    context,
-    box_size,
-    particle_radius,
-    particle_color,
-    particle_fill,
-    grid_color,
-    shape,
-    shape_radius
-  ) {
+  constructor(grid, context, config) {
     this.grid = grid;
     this.context = context;
+    this.config = { ...config };
 
     this.context.canvas.width = window.innerWidth;
     this.context.canvas.height = window.innerHeight;
 
     this.canvas_width = this.context.canvas.width;
     this.canvas_height = this.context.canvas.height;
-    this.grid_color = grid_color;
+    this.grid_color = this.config.grid_color;
 
-    this.box_size = box_size;
-    this.particle_radius = particle_radius;
-    this.particle_fill = particle_fill;
-    this.particle_color = particle_color;
+    this.box_size = this.config.box_size;
+    this.particle_radius = this.config.particle_radius;
+    this.particle_fill = this.config.particle_fill;
+    this.particle_color = this.config.particle_color;
     this.particles = [];
 
-    this.shape = shape;
-    this.shape_radius = shape_radius;
+    this.shape = this.config.shape;
+    this.shape_radius = this.config.shape_radius;
 
     this.total_steps = 0;
     this.num_regular_particles = 0;
@@ -152,17 +134,7 @@ export class Canvas {
         }
       }
 
-      let particle = new Particle(
-        i,
-        xpos,
-        ypos,
-        this.particle_radius,
-        5,
-        this.particle_color,
-        this.particle_fill,
-        xdir,
-        ydir
-      );
+      let particle = new Particle(i, xpos, ypos, xdir, ydir, this.config);
       particle.draw(this.context);
       this.particles.push(particle);
     }
@@ -194,17 +166,7 @@ export class Canvas {
       i += this.particle_radius * 2
     ) {
       // top line
-      let top = new Particle(
-        -1,
-        i,
-        corners.top_left[1],
-        this.particle_radius,
-        0,
-        "blue",
-        false,
-        0,
-        0
-      );
+      let top = new Particle(-1, i, corners.top_left[1], 0, 0, this.config);
       top.draw(this.context);
       this.particles.push(top);
 
@@ -213,12 +175,9 @@ export class Canvas {
         -1,
         i,
         corners.bottom_left[1],
-        this.particle_radius,
         0,
-        "blue",
-        false,
         0,
-        0
+        this.config
       );
       bottom.draw(this.context);
       this.particles.push(bottom);
@@ -231,32 +190,12 @@ export class Canvas {
       i += this.particle_radius * 2
     ) {
       // left line
-      let left = new Particle(
-        -1,
-        corners.top_left[0],
-        i,
-        this.particle_radius,
-        0,
-        "blue",
-        false,
-        0,
-        0
-      );
+      let left = new Particle(-1, corners.top_left[0], i, 0, 0, this.config);
       left.draw(this.context);
       this.particles.push(left);
 
       // right line
-      let right = new Particle(
-        -1,
-        corners.top_right[0],
-        i,
-        this.particle_radius,
-        0,
-        "blue",
-        false,
-        0,
-        0
-      );
+      let right = new Particle(-1, corners.top_right[0], i, 0, 0, this.config);
       right.draw(this.context);
       this.particles.push(right);
     }
@@ -275,17 +214,7 @@ export class Canvas {
       let x = center.x + radius * Math.cos(i);
       let y = center.y + radius * Math.sin(i);
 
-      let particle = new Particle(
-        -1,
-        x,
-        y,
-        this.particle_radius,
-        0,
-        "blue",
-        false,
-        0,
-        0
-      );
+      let particle = new Particle(-1, x, y, 0, 0, this.config);
       particle.draw(this.context);
       this.particles.push(particle);
     }
@@ -344,7 +273,9 @@ export class Canvas {
     this.total_steps++;
     // this.prev_mean_error = this.current_mean_error;
 
-    if (!(this.has_stopped && STOP_ANIMATING_ON_PARTICLES_STOPPED)) {
+    if (
+      !(this.has_stopped && this.config.stop_animating_on_particles_stopped)
+    ) {
       requestAnimationFrame(() => this.animate(particles_stopped_callback));
     }
 
@@ -374,11 +305,11 @@ export class Canvas {
     // }
 
     const step_threshold_exceeded =
-      this.total_steps >= MAX_STEPS_BEFORE_STOPPING;
+      this.total_steps >= this.config.max_steps_before_stopping;
 
     this.has_stopped =
       stopped_count >=
-        STOPPED_PARTICLES_THRESHOLD * this.num_regular_particles ||
+        this.config.stopped_particles_threshold * this.num_regular_particles ||
       step_threshold_exceeded;
 
     if (this.has_stopped) {

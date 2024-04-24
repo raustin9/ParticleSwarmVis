@@ -1,46 +1,22 @@
-import { Swarm } from "./swarm.js";
-// import Renderer from './renderer/renderer.js';
 import { Canvas } from "./canvas.js";
 import { randomIntFromRange } from "./util.js";
+import { config } from "./config.js";
+
+const configCopy = { ...config };
+
 class App {
   /**
    * @title App Constructor
    *
-   * @param {number} num_particles The number of particles to generate
-   * @param {string} shape Determines shape of convergence
-   * @param {number} radius Determines the radius of the shape of convergence
+   * @param {Object} config Configuration for the app's behavior (see config.js)
    */
-  constructor(num_particles, shape, shape_radius) {
-    // grid parameters
-    this.box_size = 50;
-    this.grid_color = "#262626";
-
+  constructor(config) {
     // particle parameters
     this.particle_array = [];
-    this.particle_radius = 1.5;
-    // this.num_particles = 1500; // ~1800 seems to be highest that runs smoothly
-    this.num_particles = num_particles;
-    this.particle_fill = false;
-    this.particle_color = "cyan";
-
-    this.shape = shape;
-    this.shape_radius = shape_radius;
-
+    this.config = config;
     this.grid = document.getElementById("swarm-grid");
     this.context = this.grid.getContext("2d");
-
-    this.swarm = new Swarm();
-    this.canvas = new Canvas(
-      this.grid,
-      this.context,
-      this.box_size,
-      this.particle_radius,
-      this.particle_color,
-      this.particle_fill,
-      this.grid_color,
-      this.shape,
-      this.shape_radius
-    );
+    this.canvas = new Canvas(this.grid, this.context, this.config);
 
     this.controls = document.getElementById("controls");
     this.controls.addEventListener("submit", (e) => {
@@ -60,8 +36,12 @@ class App {
 
       console.log(parseInt(num_particles), shape, parseInt(radius));
 
+      configCopy.num_particles = parseInt(num_particles);
+      configCopy.shape = shape;
+      configCopy.shape_radius = parseInt(radius);
+
       // handle submit
-      let app = new App(parseInt(num_particles), shape, parseInt(radius));
+      let app = new App(configCopy);
       app.run();
     });
   }
@@ -73,15 +53,15 @@ class App {
   create_particle_array() {
     let particle_array = [];
 
-    for (let i = 0; i < this.num_particles; i++) {
+    for (let i = 0; i < this.config.num_particles; i++) {
       particle_array.push([
         randomIntFromRange(
-          this.particle_radius,
-          this.canvas.canvas_width - this.particle_radius
+          this.config.particle_radius,
+          this.canvas.canvas_width - this.config.particle_radius
         ),
         randomIntFromRange(
-          this.particle_radius,
-          this.canvas.canvas_height - this.particle_radius
+          this.config.particle_radius,
+          this.canvas.canvas_height - this.config.particle_radius
         ),
       ]);
     }
@@ -105,5 +85,5 @@ class App {
   }
 }
 
-let app = new App(1500, "", 300);
+let app = new App(configCopy);
 app.run();
