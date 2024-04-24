@@ -86,6 +86,7 @@ class App {
   -- Avg. Distance to Shape: ${result.average_distance_to_shape}
   -- Timed out?: ${result.timeout}`
         );
+        this.#send_data(result);
 
         this.canvas.reset();
         delete this.canvas;
