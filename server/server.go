@@ -41,8 +41,8 @@ func data(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    f, err := os.OpenFile("./server/data.csv", os.O_APPEND|os.O_WRONLY, 0644)
-    fmt.Fprintf(f, "%d, %f\n", d.TotalSteps, d.AverageDistance)
+    f, _ := os.OpenFile("./server/data.csv", os.O_APPEND|os.O_WRONLY, 0644)
+    fmt.Fprintf(f, "%d,%f,%f,%f, %f,%t,%d\n", d.Iteration, d.Inertia, d.Cognition, d.Social, d.AverageDistance, d.Timeout, d.TotalSteps)
 
     log.Printf("%s: /data: Data: %+v", ctx.Value(keyServerAddr), d)
     fmt.Fprintf(w, "Data: %+v", d)
