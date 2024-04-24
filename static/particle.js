@@ -6,10 +6,12 @@ const SOCIAL_RANGE = 50;
 const SOCIAL_SCENT_INCREASE_FACTOR = 10;
 const SCENT_REDUCTION_FACTOR = 10;
 const COGNITION = 3;
-const SOCIAL = 3;
+const SOCIAL = 0.1;
 const STAGNATION_LIMIT = Infinity;
 const INERTIA = 1;
-const MAX_TURNING_RADIUS = null; // degrees
+const MAX_TURNING_RADIUS = null; // Degrees. Set to null to turn off turning radius.
+const RECENT_POSITIONS_CAPACITY = 10;
+const STOPPING_RADIUS = 30;
 
 let g_best = {
   x: 0,
@@ -69,6 +71,7 @@ export class Particle {
     this.stagnation_limit = STAGNATION_LIMIT;
     this.inertia = INERTIA;
     this.stagnation_counter = 0;
+    this.recent_positions = [];
   }
 
   /**
@@ -100,6 +103,29 @@ export class Particle {
     this.stagnation_counter = 0; // Reset stagnation counter
   }
 
+  check_stopped() {
+    if (this.recent_positions.length < RECENT_POSITIONS_CAPACITY) {
+      return 0;
+    }
+
+    let max_distance = 0;
+    for (let i = 0; i < this.recent_positions.length; i++) {
+      for (let j = i + 1; j < this.recent_positions.length; j++) {
+        let current_distance = distance(
+          this.recent_positions[i].x,
+          this.recent_positions[i].y,
+          this.recent_positions[j].x,
+          this.recent_positions[j].y
+        );
+        if (current_distance > max_distance) {
+          max_distance = current_distance;
+        }
+      }
+    }
+
+    return max_distance <= STOPPING_RADIUS ? 1 : 0;
+  }
+
   /**
    * @title update(context, particles)
    * @description Updates particle motion accounting for canvas boundaries and collisions
@@ -119,11 +145,13 @@ export class Particle {
       x: 0,
       y: 0,
     };
+    let min_distance_to_shape = Infinity;
 
     // check for collisions
     if (this.id === -1) {
       return;
     }
+
     for (let i = 0; i < particles.length; i++) {
       const otherParticle = particles[i];
       if (this.id === -1) {
@@ -136,6 +164,10 @@ export class Particle {
         this.ypos,
         otherParticle.xpos,
         otherParticle.ypos
+      );
+      min_distance_to_shape = Math.min(
+        distance_to_particle,
+        min_distance_to_shape
       );
 
       // Process distance from shape particle
@@ -315,5 +347,16 @@ export class Particle {
     if (this.stagnation_counter > this.stagnation_limit) {
       this.reset_p_best();
     }
+
+    if (this.recent_positions.length >= RECENT_POSITIONS_CAPACITY) {
+      this.recent_positions.shift();
+    }
+
+    this.recent_positions.push({ x: this.xpos, y: this.ypos });
+    this.has_stopped = this.check_stopped();
+    return {
+      min_distance_to_shape: min_distance_to_shape,
+      has_stopped: this.has_stopped,
+    };
   }
 }
