@@ -42,6 +42,20 @@ class App {
     this.particle_array = particle_array;
   }
 
+  #send_data(data) {
+    fetch(
+        "/data",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(data)
+        }
+    );
+  }
+
   /**
    * @title run()
    * @description Runs application. Creates particle array, canvas, and animates canvas.
@@ -57,6 +71,7 @@ class App {
       this.canvas.animate(resolve);
     });
     console.log(result);
+    this.#send_data(result);
   }
 }
 
