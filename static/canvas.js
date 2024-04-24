@@ -44,7 +44,9 @@ export class Canvas {
    */
   create(particle_array) {
     this.num_regular_particles = particle_array.length;
-    this.create_grid(this.grid_color);
+    if (!this.config.headless) {
+      this.create_grid(this.grid_color);
+    }
 
     if (this.shape == "circle") this.create_circle(this.shape_radius);
     if (this.shape == "square") this.create_square(this.shape_radius);

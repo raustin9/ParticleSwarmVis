@@ -3,6 +3,8 @@ export const config = {
    **   Swarm Config   **
    **********************/
 
+  headless: false,
+
   // Number of particles
   num_particles: 1500,
 

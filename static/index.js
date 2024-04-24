@@ -3,7 +3,7 @@ import { randomIntFromRange } from "./util.js";
 import { config } from "./config.js";
 
 const configCopy = { ...config };
-
+let app;
 class App {
   /**
    * @title App Constructor
@@ -17,33 +17,6 @@ class App {
     this.grid = document.getElementById("swarm-grid");
     this.context = this.grid.getContext("2d");
     this.canvas = new Canvas(this.grid, this.context, this.config);
-
-    this.controls = document.getElementById("controls");
-    this.controls.addEventListener("submit", (e) => {
-      e.preventDefault();
-      this.canvas.reset();
-      let num_particles = document.getElementById("num_particles_value").value;
-      let radios = document.getElementsByName("shape");
-      let radius = document.getElementById("shape_radius").value;
-
-      let shape = "";
-      for (let i = 0; i < radios.length; i++) {
-        if (radios[i].checked) {
-          shape = radios[i].value;
-          break;
-        }
-      }
-
-      console.log(parseInt(num_particles), shape, parseInt(radius));
-
-      configCopy.num_particles = parseInt(num_particles);
-      configCopy.shape = shape;
-      configCopy.shape_radius = parseInt(radius);
-
-      // handle submit
-      let app = new App(configCopy);
-      app.run();
-    });
   }
 
   /**
@@ -74,7 +47,9 @@ class App {
    * @description Runs application. Creates particle array, canvas, and animates canvas.
    */
   async run() {
-    this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+    if (!this.config.headless) {
+      this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+    }
 
     this.create_particle_array();
     this.canvas.create(this.particle_array);
@@ -85,5 +60,36 @@ class App {
   }
 }
 
-let app = new App(configCopy);
-app.run();
+const handleControlsSubmit = (e) => {
+  e.preventDefault();
+  app.canvas.reset();
+  let num_particles = document.getElementById("num_particles_value").value;
+  let radios = document.getElementsByName("shape");
+  let radius = document.getElementById("shape_radius").value;
+
+  let shape = "";
+  for (let i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      shape = radios[i].value;
+      break;
+    }
+  }
+
+  console.log(parseInt(num_particles), shape, parseInt(radius));
+
+  configCopy.num_particles = parseInt(num_particles);
+  configCopy.shape = shape;
+  configCopy.shape_radius = parseInt(radius);
+
+  // handle submit
+  app = new App(configCopy);
+  app.run();
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("controls")
+    .addEventListener("submit", handleControlsSubmit);
+  app = new App(configCopy);
+  app.run();
+});

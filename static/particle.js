@@ -44,6 +44,10 @@ export class Particle {
    * @param {CanvasRenderingContext2D} context Context of canvas element
    */
   draw(context) {
+    if (this.config.headless) {
+      return;
+    }
+
     context.beginPath();
     context.arc(
       this.xpos,
