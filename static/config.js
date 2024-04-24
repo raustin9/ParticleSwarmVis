@@ -5,7 +5,7 @@ export const config = {
 
   // Whether or not to render the particles
   headless: false,
-  experiment_mode: true,
+  experiment_mode: false,
 
   // Number of particles
   num_particles: 1500,
@@ -68,7 +68,7 @@ export const config = {
   cognition: 10,
 
   // Social
-  social: 0.1,
+  social: 0.01,
 
   // Inertia
   inertia: 1,

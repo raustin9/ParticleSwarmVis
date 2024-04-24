@@ -94,6 +94,11 @@ class App {
       console.log(result);
     }
   }
+
+  delete() {
+    this.canvas.reset();
+    delete this.particle_array;
+  }
 }
 
 const handleControlsSubmit = (e) => {
@@ -118,6 +123,7 @@ const handleControlsSubmit = (e) => {
   configCopy.shape_radius = parseInt(radius);
 
   // handle submit
+  app.delete();
   app = new App(configCopy);
   app.run();
 };

@@ -301,11 +301,8 @@ export class Canvas {
    * @description Reset the context of the canvas
    */
   reset() {
-    if (this.config.headless) {
-      delete this.particles;
-    } else {
-      this.context.reset();
-    }
+    delete this.particles;
+    this.context.reset();
   }
 
   /**
