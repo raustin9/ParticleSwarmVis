@@ -71,7 +71,6 @@ class App {
       this.canvas.animate(resolve);
     });
     console.log(result);
-    this.#send_data(result);
   }
 }
 
