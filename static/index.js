@@ -61,7 +61,7 @@ class App {
     }
 
     // Cognition parameter
-    for (let val = 0.1; val <= 4.0; val += 0.1) {
+    for (let val = 0.1; val <= 4.05; val += 0.1) {
       for (let i = 0; i < this.config.random_repeats; i++) {
         combos.push({
           iteration: i,
@@ -73,7 +73,7 @@ class App {
     }
 
     // Social parameter
-    for (let val = 0.1; val <= 4.0; val += 0.1) {
+    for (let val = 0.1; val <= 4.05; val += 0.1) {
       for (let i = 0; i < this.config.random_repeats; i++) {
         combos.push({
           iteration: i,
