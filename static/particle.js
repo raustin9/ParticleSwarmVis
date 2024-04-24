@@ -34,6 +34,8 @@ export class Particle {
     this.direction = Math.atan2(this.velocity.y, this.velocity.x);
     this.p_best = { x: xpos, y: ypos };
     this.p_best_score = Infinity;
+    this.g_best = { x: xpos, y: ypos };
+    this.g_best_score = Infinity;
     this.stagnation_counter = 0;
     this.recent_positions = [];
     this.dimensions = dimensions;
@@ -269,40 +271,25 @@ export class Particle {
       }
     }
 
-    const best_scent_score = Math.min(
-      smallest_scent_score,
-      smallest_social_scent_score
-    );
-
-    if (best_scent_score != Infinity && best_scent_score < this.p_best_score) {
-      const best_scent =
-        best_scent_score == smallest_scent_score
-          ? smallest_scent
-          : smallest_social_scent;
-      this.p_best_score = best_scent_score;
-      this.p_best = best_scent;
-      this.stagnation_counter = 0;
-    } else {
-      this.stagnation_counter += 1;
+    if (smallest_scent_score < this.p_best_score) {
+      this.p_best_score = smallest_scent_score;
+      this.p_best = smallest_scent;
     }
 
-    if (this.p_best_score < g_best_score) {
-      g_best_score = this.p_best_score;
-      g_best = {
-        x: this.xpos,
-        y: this.ypos,
-      };
+    if (smallest_social_scent_score < this.g_best_score) {
+      this.g_best_score = smallest_social_scent_score;
+      this.g_best = smallest_social_scent;
     }
 
-    if (isFinite(this.p_best_score) && isFinite(g_best_score)) {
+    if (isFinite(this.p_best_score) && isFinite(this.g_best_score)) {
       let cognitive_component_x =
         this.config.cognition * Math.random() * (this.p_best.x - this.xpos);
       let cognitive_component_y =
         this.config.cognition * Math.random() * (this.p_best.y - this.ypos);
       let social_component_x =
-        this.config.social * Math.random() * (g_best.x - this.xpos);
+        this.config.social * Math.random() * (this.g_best.x - this.xpos);
       let social_component_y =
-        this.config.social * Math.random() * (g_best.y - this.ypos);
+        this.config.social * Math.random() * (this.g_best.y - this.ypos);
 
       let desired_velocity_x =
         this.velocity.x * this.config.inertia +

@@ -55,20 +55,20 @@ export const config = {
   max_speed: 5,
 
   // Range in which particles can detect a shape particle
-  scent_range: 500,
+  scent_range: 1000,
 
   // Range in which particles can detect other particles
-  social_range: 50,
+  social_range: 1000,
 
   // The factor by which social scent is increased when
   // transmitted between particles
-  social_scent_increase_factor: 10,
+  social_scent_increase_factor: 1.5,
 
   // Cognition
-  cognition: 10,
+  cognition: 3,
 
   // Social
-  social: 0.01,
+  social: 2,
 
   // Inertia
   inertia: 1,
@@ -91,7 +91,7 @@ export const config = {
 
   // The fraction of velocity that is preserved on
   // particle collision
-  collision_energy_loss_factor: 0.9,
+  collision_energy_loss_factor: 1,
 
   // The amount that is added to the position correction that occurs when
   // particles collide
