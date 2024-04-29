@@ -101,29 +101,62 @@ class App {
    * @title run()
    * @description Runs application. Creates particle array, canvas, and animates canvas.
    */
+
+  async run_experiment_mode() {
+    this.config.headless = true;
+    const test_cases = this.generate_test_cases();
+    for (let test_case of test_cases) {
+      for (let [key, val] of Object.entries(test_case)) {
+        this.config[key] = val;
+      }
+      this.canvas = new Canvas(this.grid, this.context, this.config);
+      this.create_particle_array();
+      this.canvas.create(this.particle_array);
+      const result = await new Promise((resolve) => {
+        this.canvas.animate(resolve);
+      });
+
+      this.#send_data({
+        ...result,
+        ...test_case,
+      });
+
+      this.canvas.reset();
+      delete this.canvas;
+    }
+  }
+  async run_presentation_mode() {
+    document.querySelector("form").style.display = "none";
+    while (true) {
+      this.config = {
+        ...this.config,
+        inertia: randomIntFromRange(1, 10) / 10,
+        social: randomIntFromRange(1, 40) / 10,
+        cognition: randomIntFromRange(1, 40) / 10,
+        scent_range: randomIntFromRange(100, 1000),
+        social_range: randomIntFromRange(5, 100),
+        max_steps_before_stopping: 175,
+        shape: Math.random() > 0.5 ? "circle" : "square",
+        shape_radius: randomIntFromRange(100, 300),
+        particle_radius: randomIntFromRange(10, 40) / 10,
+        num_particles: randomIntFromRange(1000, 1500),
+      };
+
+      this.canvas = new Canvas(this.grid, this.context, this.config);
+      this.create_particle_array();
+      this.canvas.create(this.particle_array);
+      await new Promise((resolve) => {
+        this.canvas.animate(resolve);
+      });
+      this.canvas.reset();
+      delete this.canvas;
+    }
+  }
   async run() {
     if (this.config.experiment_mode) {
-      this.config.headless = true;
-      const test_cases = this.generate_test_cases();
-      for (let test_case of test_cases) {
-        for (let [key, val] of Object.entries(test_case)) {
-          this.config[key] = val;
-        }
-        this.canvas = new Canvas(this.grid, this.context, this.config);
-        this.create_particle_array();
-        this.canvas.create(this.particle_array);
-        const result = await new Promise((resolve) => {
-          this.canvas.animate(resolve);
-        });
-
-        this.#send_data({
-          ...result,
-          ...test_case,
-        });
-
-        this.canvas.reset();
-        delete this.canvas;
-      }
+      this.run_experiment_mode();
+    } else if (this.config.presentation_mode) {
+      this.run_presentation_mode();
     } else {
       if (!this.config.headless) {
         this.context.clearRect(

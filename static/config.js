@@ -2,7 +2,8 @@ export const config = {
   /**********************
    ** Experimentation  **
    **********************/
-  experiment_mode: true,
+  presentation_mode: true,
+  experiment_mode: false,
   inertia_default: 0.5,
   cognition_default: 1,
   social_default: 1,
@@ -54,7 +55,7 @@ export const config = {
   particle_radius: 1.5,
 
   // Whether or not to fill the particles
-  particle_fill: false,
+  particle_fill: true,
 
   // Non-shape Particle color
   particle_color: "cyan",
