@@ -2,7 +2,7 @@ export const config = {
   /**********************
    ** Experimentation  **
    **********************/
-  presentation_mode: true,
+  presentation_mode: false,
   experiment_mode: false,
   inertia_default: 0.5,
   cognition_default: 1,
@@ -64,23 +64,23 @@ export const config = {
   max_speed: 5,
 
   // Range in which particles can detect a shape particle
-  scent_range: 1000,
+  scent_range: 100,
 
   // Range in which particles can detect other particles
-  social_range: 20,
+  social_range: 300,
 
   // The factor by which social scent is increased when
   // transmitted between particles
   social_scent_increase_factor: 1,
 
   // Cognition
-  cognition: 4,
+  cognition: 1,
 
   // Social
-  social: 1,
+  social: 4,
 
   // Inertia
-  inertia: 0.1,
+  inertia: 1,
 
   // Particle mass
   mass: 1,

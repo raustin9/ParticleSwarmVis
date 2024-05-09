@@ -135,7 +135,7 @@ class App {
         cognition: randomIntFromRange(1, 40) / 10,
         scent_range: randomIntFromRange(100, 1000),
         social_range: randomIntFromRange(5, 100),
-        max_steps_before_stopping: 175,
+        max_steps_before_stopping: 150,
         shape: Math.random() > 0.5 ? "circle" : "square",
         shape_radius: randomIntFromRange(100, 300),
         particle_radius: randomIntFromRange(10, 40) / 10,
@@ -196,8 +196,6 @@ const handleControlsSubmit = (e) => {
       break;
     }
   }
-
-  console.log(parseInt(num_particles), shape, parseInt(radius));
 
   configCopy.num_particles = parseInt(num_particles);
   configCopy.shape = shape;

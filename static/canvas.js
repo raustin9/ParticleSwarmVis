@@ -311,8 +311,11 @@ export class Canvas {
    */
   animate(particles_stopped_callback) {
     this.total_steps++;
-    document.getElementById("steps-count").textContent =
-      this.total_steps.toString();
+    if (!this.config.headless) {
+      document.getElementById("steps-count").textContent =
+        this.total_steps.toString();
+    }
+
     if (!this.particles) {
       return;
     }
